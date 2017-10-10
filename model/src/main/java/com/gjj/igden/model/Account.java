@@ -11,8 +11,8 @@ import java.util.*;
 @Table(name = "account")
 public class Account implements UserDetails {
 
-
-    private Integer id;
+	private static final long serialVersionUID = 4103535806827715305L;
+	private Integer id;
     private String accountName;
     private String email;
     private String additionalInfo;

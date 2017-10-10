@@ -28,7 +28,7 @@ public class Role implements GrantedAuthority {
     @Override
     @Transient
     public String getAuthority() {
-        return getName();
+    	return "ROLE_" + getName();
     }
 
     public String getName() {

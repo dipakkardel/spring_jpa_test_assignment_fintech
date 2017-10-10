@@ -68,24 +68,33 @@ public class MainController {
     return model;
   }
 
-  @RequestMapping(value = "/login**", method = RequestMethod.GET)
+  @RequestMapping(value = "/login", method = RequestMethod.GET)
   public ModelAndView login(@RequestParam(value = "error", required = false) String error,
-                            @RequestParam(value = "logout", required = false) String logout, HttpServletRequest request) {
-    ModelAndView model = new ModelAndView();
-    if (error != null) {
-      model.addObject("error", "Invalid username and password!");
-      String targetUrl = getRememberMeTargetUrlFromSession(request);
-      //System.out.println(targetUrl);
-      if (StringUtils.hasText(targetUrl)) {
-        model.addObject("targetUrl", targetUrl);
-        model.addObject("loginUpdate", true);
-      }
-    }
-    if (logout != null) {
-      model.addObject("msg", "You've been logged out successfully.");
-    }
-    model.setViewName("login");
-    return model;
+	  @RequestParam(value = "logout", required = false) String logout,
+        HttpServletRequest request) {
+
+		ModelAndView model = new ModelAndView();
+		if (error != null) {
+			model.addObject("error", "Invalid username and password!");
+
+			//login form for update page
+                      //if login error, get the targetUrl from session again.
+			String targetUrl = getRememberMeTargetUrlFromSession(request);
+			System.out.println(targetUrl);
+			if(StringUtils.hasText(targetUrl)){
+				model.addObject("targetUrl", targetUrl);
+				model.addObject("loginUpdate", true);
+			}
+
+		}
+
+		if (logout != null) {
+			model.addObject("msg", "You've been logged out successfully.");
+		}
+		model.setViewName("login");
+
+		return model;
+
   }
 
   private boolean isRememberMeAuthenticated() {
