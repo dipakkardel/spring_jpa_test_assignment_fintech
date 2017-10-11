@@ -6,6 +6,7 @@ import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import javax.persistence.Transient;
@@ -33,6 +34,7 @@ public class InstId {
 	// new parameter WachListDesc
 	@Autowired
 	@ManyToOne(cascade=CascadeType.ALL,targetEntity=WatchListDesc.class)
+	@JoinColumn(name="watchlist_id_fk")
 	private IWatchListDesc iWatchListDesc;
 	private @Transient Exchange exchange;
 

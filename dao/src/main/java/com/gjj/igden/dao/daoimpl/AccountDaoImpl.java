@@ -43,14 +43,7 @@ public class AccountDaoImpl extends AbstractDAO<Account> {
         cq.select(root);
         return cq;
     }
-    /* TEMPORARY COMMENTED TILL TOTAL IMPLEMENTATION BECAUSE FOUND ONE MISSING TABLE ACCOUNT*/
-//  Avatar
 
-   /* public byte[] getAvatar(Account account) throws DAOException {
-        Query query = em.createQuery("bytes FROM account_avatars WHERE account_id =(:id);");
-        query.setParameter("id", account.getId());
-        return getBytesFromDB(query);
-    }
 
     public byte[] getDefaultAvatar() throws DAOException {
         try (InputStream is = this.getClass().getClassLoader().getResourceAsStream("default.jpg")) {
@@ -59,20 +52,6 @@ public class AccountDaoImpl extends AbstractDAO<Account> {
             throw new DAOException(e.getMessage(), e);
         }
     }
-
-    private int insertAvatar(Account account, byte[] avatar) {
-        Query query = em.createNativeQuery("INSERT INTO account_avatars(account_id, bytes) VALUES (:id, :avatar);");
-        query.setParameter("id", account.getId());
-        query.setParameter("avatar", avatar);
-        return query.executeUpdate();
-    }
-
-    public int updateAvatar(Account account, byte[] avatar) {
-        Query query = em.createNativeQuery("UPDATE account_avatars SET bytes = (:avatar) WHERE account_id = (:id);");
-        query.setParameter("id", account.getId());
-        query.setParameter("avatar", avatar);
-        return query.executeUpdate();
-    }*/
     
     public void delete(Account id) {
        super.delete(id);

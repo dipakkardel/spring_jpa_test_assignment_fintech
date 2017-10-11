@@ -22,7 +22,7 @@ public class Account implements UserDetails, EntityId {
     private List<IWatchListDesc> descriptions;
     private String creationDate;
     private boolean enabled;
-    private byte[] image;
+    private Avatar avatar;
 
     private Set<Role> roles = new HashSet<>();
 
@@ -243,12 +243,14 @@ public class Account implements UserDetails, EntityId {
         this.email = email;
     }
 
-	public byte[] getImage() {
-		return image;
+    @OneToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name="avatar_id")
+	public Avatar getAvatar() {
+		return avatar;
 	}
 
-	public void setImage(byte[] image) {
-		this.image = image;
+	public void setAvatar(Avatar avatar) {
+		this.avatar = avatar;
 	}
 
 	@Transient
