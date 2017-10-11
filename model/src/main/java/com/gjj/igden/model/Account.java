@@ -9,7 +9,6 @@ import com.mysql.cj.jdbc.Blob;
 import javax.persistence.*;
 import java.util.*;
 
-
 @Entity
 @Table(name = "account")
 public class Account implements UserDetails, EntityId {
@@ -23,14 +22,20 @@ public class Account implements UserDetails, EntityId {
     private List<IWatchListDesc> descriptions;
     private String creationDate;
     private boolean enabled;
-    private Blob image;
+    private byte[] image;
 
     private Set<Role> roles = new HashSet<>();
 
     public Account() {
     }
 
-    public Account(String accountName, String email, String additionalInfo, String password,
+    public Account(Long id) {
+		super();
+		this.id = id;
+	}
+
+
+	public Account(String accountName, String email, String additionalInfo, String password,
                    List<IWatchListDesc> descriptions, String creationDate) {
         this.accountName = accountName;
          this.email = email;
@@ -238,15 +243,15 @@ public class Account implements UserDetails, EntityId {
         this.email = email;
     }
 
-    @Column
-	public Blob getImage() {
+	public byte[] getImage() {
 		return image;
 	}
 
-	public void setImage(Blob image) {
+	public void setImage(byte[] image) {
 		this.image = image;
 	}
 
+	@Transient
 	public List<IWatchListDesc> getDescriptions() {
 		return descriptions;
 	}

@@ -22,7 +22,7 @@ public class AccountDaoImpl extends AbstractDAO<Account> {
 	@Override
     public void create(Account account) throws DAOException {
         super.create(account);
-        insertAvatar(account, getDefaultAvatar());
+        /*insertAvatar(account, getDefaultAvatar());*/
     }
 
     @Override
@@ -32,9 +32,8 @@ public class AccountDaoImpl extends AbstractDAO<Account> {
 
     @Override
     public List<Account> readAll() {
-      /*  CriteriaQuery<Account> cq = getAccountCriteriaQuery();
-        System.out.println("fetching all");*/
-        return em.createQuery("from account").getResultList();
+    	BarDaoImpl b = new BarDaoImpl();
+        return em.createQuery("from Account").getResultList();
     }
 
     private CriteriaQuery<Account> getAccountCriteriaQuery() {
@@ -44,11 +43,11 @@ public class AccountDaoImpl extends AbstractDAO<Account> {
         cq.select(root);
         return cq;
     }
-
+    /* TEMPORARY COMMENTED TILL TOTAL IMPLEMENTATION BECAUSE FOUND ONE MISSING TABLE ACCOUNT*/
 //  Avatar
 
-    public byte[] getAvatar(Account account) throws DAOException {
-        Query query = em.createNativeQuery("SELECT bytes FROM account_avatars WHERE account_id =(:id);");
+   /* public byte[] getAvatar(Account account) throws DAOException {
+        Query query = em.createQuery("bytes FROM account_avatars WHERE account_id =(:id);");
         query.setParameter("id", account.getId());
         return getBytesFromDB(query);
     }
@@ -73,7 +72,7 @@ public class AccountDaoImpl extends AbstractDAO<Account> {
         query.setParameter("id", account.getId());
         query.setParameter("avatar", avatar);
         return query.executeUpdate();
-    }
+    }*/
     
     public void delete(Account id) {
        super.delete(id);
@@ -93,5 +92,4 @@ public class AccountDaoImpl extends AbstractDAO<Account> {
 		return null;
 		
 	}
-    
 }

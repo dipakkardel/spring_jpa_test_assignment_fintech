@@ -28,7 +28,7 @@ public class InstId {
 	@Column(name = "instId")
 	private String instId;
 	private final static String SEPARATOR = "@";
-	@Transient private String symbol; // create composite primary key symbol + exch_id
+	private String symbol; // create composite primary key symbol + exch_id
 	@Transient private String exchId;
 	// new parameter WachListDesc
 	@Autowired

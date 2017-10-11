@@ -3,6 +3,7 @@ package com.gjj.igden.service.barService;
 import com.gjj.igden.model.Bar;
 import com.gjj.igden.dao.BarDao;
 import com.gjj.igden.dao.daoUtil.DAOException;
+import com.gjj.igden.dao.daoimpl.BarDaoImpl;
 import com.gjj.igden.service.util.ServiceException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -12,7 +13,7 @@ import java.util.List;
 @Service
 public class BarService {
   @Autowired
-  private BarDao barDao;
+  private BarDaoImpl barDao;
 
   public List<Bar> getBarList(String instId) {
     return barDao.getBarList(instId);
