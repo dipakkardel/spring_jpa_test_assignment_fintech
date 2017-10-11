@@ -1,4 +1,4 @@
-package com.gjj.igden.utils;
+package com.gjj.igden.model;
 /**
  * Created by denisigoshev on 5/29/2017.
  */

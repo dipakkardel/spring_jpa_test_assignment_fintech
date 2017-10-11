@@ -1,6 +1,6 @@
 package com.gjj.igden.service.test;
 
-import com.gjj.igden.service.watchlist.WatchListDescServiceService;
+import com.gjj.igden.service.watchlist.WatchListDescService;
 import com.gjj.igden.service.test.daostub.WatchListDescDaoStub;
 import com.gjj.igden.model.IWatchListDesc;
 import org.junit.Assert;
@@ -15,7 +15,7 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import java.util.List;
 
 @Configuration
-@ComponentScan(basePackageClasses = {WatchListDescServiceService.class,
+@ComponentScan(basePackageClasses = {WatchListDescService.class,
   WatchListDescDaoStub.class})
 class SpringTextContext {
 }
@@ -24,7 +24,7 @@ class SpringTextContext {
 @ContextConfiguration(classes = SpringTextContext.class)
 public class WatchListDescServiceTest {
   @Autowired
-  private WatchListDescServiceService watchListDescService;
+  private WatchListDescService watchListDescService;
 
   @Test
   public void simpleReadTest() throws Exception {

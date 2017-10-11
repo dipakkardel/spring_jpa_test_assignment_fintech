@@ -2,7 +2,7 @@ package com.gjj.igden.controller;
 
 import com.gjj.igden.model.Users;
 import com.gjj.igden.model.WatchListDesc;
-import com.gjj.igden.service.watchlist.WatchListDescServiceService;
+import com.gjj.igden.service.watchlist.WatchListDescService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
@@ -14,7 +14,7 @@ import java.util.Arrays;
 @Controller
 public class WatchListDescController {
   @Autowired
-  private WatchListDescServiceService service;
+  private WatchListDescService service;//renamed WatchListDescServiceService to WatchListDescService 
 
   @RequestMapping(value = "/view-watchlist", method = RequestMethod.GET)
   public String viewAccount(ModelMap model, @RequestParam int id) {
@@ -26,7 +26,8 @@ public class WatchListDescController {
   @GetMapping(value = "/add-watchlist")
   public String addWatchList(ModelMap model, @RequestParam int id) {
     System.out.println(id);
-    WatchListDesc theWatchListDesc = new WatchListDesc(id);
+    //temporary commented to resolve autowiring issue while generating tables
+   // WatchListDesc theWatchListDesc = new WatchListDesc(id);
     model.addAttribute("theWatchListDesc", theWatchListDesc);
     return "lazyRowLoad";
   }

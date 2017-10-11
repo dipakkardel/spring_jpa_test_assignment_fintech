@@ -4,7 +4,7 @@ import com.gjj.igden.controller.AccountController;
 import com.gjj.igden.dao.AccountDao;
 import com.gjj.igden.service.accountService.AccountService;
 import com.gjj.igden.service.barService.BarService;
-import com.gjj.igden.service.watchlist.WatchListDescServiceService;
+import com.gjj.igden.service.watchlist.WatchListDescService;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
@@ -26,8 +26,8 @@ import javax.sql.DataSource;
 @EnableWebMvc
 @Configuration
 @ComponentScan(basePackageClasses = {AccountController.class,
-        AccountDao.class, WatchListDescServiceService.class,
-        WatchListDescServiceService.class, AccountService.class, BarService.class})
+        AccountDao.class, WatchListDescService.class,
+        WatchListDescService.class, AccountService.class, BarService.class})
 @Import({SecurityConfig.class, JPAConfig.class})
 public class WebMvcConfig extends WebMvcConfigurerAdapter {
     @Override

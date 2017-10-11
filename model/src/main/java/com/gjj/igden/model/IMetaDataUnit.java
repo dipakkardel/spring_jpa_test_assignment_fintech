@@ -1,4 +1,4 @@
-package com.gjj.igden.utils;
+package com.gjj.igden.model;
 
 import org.javatuples.Ennead;
 

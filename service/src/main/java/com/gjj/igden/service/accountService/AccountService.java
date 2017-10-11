@@ -15,8 +15,6 @@ import java.util.List;
 public class AccountService {
   @Autowired
   private AccountDao accountDao;
-  @Autowired
-  private WatchListDescDao watchListDescDao;
 
   public List<Account> getAccountList() {
     return accountDao.getAllAccounts();
@@ -38,8 +36,6 @@ public class AccountService {
 
   public Account retrieveAccount(int accId) {
     Account user = accountDao.getAccountById(accId);
-    List<IWatchListDesc> dataSetList = watchListDescDao.getDataSetsAttachedToAcc(accId);
-    user.setDataSets(dataSetList);
     return user;
   }
 

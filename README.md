@@ -1,5 +1,3 @@
-# README #
+**Spring JPA Test Assignment**
 
-This README would normally document whatever steps are necessary to get your application up and running.
-
-### This repository is my copy of a spring security - remember me addition. ###
+I believe my assignment will be completed by **Thursday, 12th of October**. I need total 16 hrs to complete the assignment work. 

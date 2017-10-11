@@ -1,41 +1,46 @@
 package com.gjj.igden.model;
 
+import java.beans.Transient;
 import java.util.List;
 
-public interface IWatchListDesc {
-  List<String> getStockSymbolsList();
+import com.gjj.igden.utils.EntityId;
 
-  void setStockSymbolsList(List<String> stockSymbolsList);
+public interface IWatchListDesc extends EntityId {
+	@Transient
+	List<String> getStockSymbolsList();
 
-  void setStockSymbolsListFromOperationList(List<OperationParameters> stockSymbolsList);
+	void setStockSymbolsList(List<String> stockSymbolsList);
 
-  int getWatchListId();
+	void setStockSymbolsListFromOperationList(List<OperationParameters> stockSymbolsList);
 
-  void setWatchListId(int watchListId);
+	Long getId();
 
-  Integer getAccountId();
+	void setId(Long watchListId);
 
-  void setAccountId(int accountId);
+	Account getAccount();
 
-  String getWatchListName();
+	void setAccount(Account account);
 
-  void setWatchListName(String watchListName);
+	String getWatchListName();
 
-  String getWatchListDetails();
+	void setWatchListName(String watchListName);
 
-  void setWatchListDetails(String watchListDetails);
+	String getWatchListDetails();
 
-  int getMarketDataFrequency();
+	void setWatchListDetails(String watchListDetails);
 
-  void setMarketDataFrequency(int marketDataFrequency);
+	int getMarketDataFrequency();
 
-  String getDataProviders();
+	void setMarketDataFrequency(int marketDataFrequency);
 
-  void setDataProviders(String dataProviders);
+	String getDataProviders();
 
-  String toString();
+	void setDataProviders(String dataProviders);
 
-  List<OperationParameters> getOperationParameterses();
+	String toString();
 
-  void setOperationParameterses(List<OperationParameters> operationParameterses);
+	@Transient
+	List<OperationParameters> getOperationParameterses();
+
+	void setOperationParameterses(List<OperationParameters> operationParameterses);
 }

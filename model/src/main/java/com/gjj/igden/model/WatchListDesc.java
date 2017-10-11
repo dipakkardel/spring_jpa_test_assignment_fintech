@@ -3,20 +3,49 @@ package com.gjj.igden.model;
 import org.apache.commons.collections4.FactoryUtils;
 import org.apache.commons.collections4.list.LazyList;
 
+import com.gjj.igden.utils.EntityId;
+
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
-public class WatchListDesc implements IWatchListDesc {
-  private Integer watchListId;
-  private int accountId;
-  private String watchListName;
-  private String watchListDetails;
-  private int marketDataFrequency;
-  private String dataProviders;
-  private List<String> stockSymbolsList;
-  private List operationParameterses = LazyList.lazyList(new ArrayList<>(),
-    FactoryUtils.instantiateFactory(OperationParameters.class));
+import javax.persistence.CascadeType;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.Table;
+import javax.persistence.Transient;
+
+@Entity
+@Table(name = "Data_Set")
+public class WatchListDesc implements IWatchListDesc, Serializable, EntityId {
+	@Id
+	@GeneratedValue(strategy = GenerationType.AUTO)
+	@Column(name = "data_set_id")
+	private Long id; // data_set_id
+	//@Column(name = "account_id")
+	@ManyToOne(cascade=CascadeType.ALL)
+	@JoinColumn(name="account_id")
+	private Account account; // account_fk
+	@Column(name = "data_set_name")
+	private String watchListName; // dataset name
+	@Column(name = "data_set_desc")
+	private String watchListDetails; // data set desc
+	@Column(name = "market_data_frequency")
+	private int marketDataFrequency; // market data frequency
+	@Column(name="data_provider")
+	private String dataProviders; // data providers
+	
+	@Transient
+	private  List<String> stockSymbolsList; // wl_tickers (insta) -- delete
+	@Transient
+	private  List<OperationParameters> operationParameterses = LazyList.lazyList(new ArrayList<>(),
+			FactoryUtils.instantiateFactory(OperationParameters.class));
 
   public List<String> getStockSymbolsList() {
     return stockSymbolsList;
@@ -43,20 +72,20 @@ public class WatchListDesc implements IWatchListDesc {
     this.operationParameterses = operationParameterses;
   }
 
-  public int getWatchListId() {
-    return watchListId;
+  public Long getWatchListId() {
+    return id;
   }
 
-  public void setWatchListId(int watchListId) {
-    this.watchListId = watchListId;
+  public void setWatchListId(Long watchListId) {
+    this.id = watchListId;
   }
 
-  public Integer getAccountId() {
-    return accountId;
+  public Account getAccount() {
+    return account;
   }
 
-  public void setAccountId(int accountId) {
-    this.accountId = accountId;
+  public void setAccount(Account accountId) {
+    this.account = accountId;
   }
 
   public String getWatchListName() {
@@ -96,14 +125,14 @@ public class WatchListDesc implements IWatchListDesc {
   public WatchListDesc() {
   }
 
-  public WatchListDesc(int accountId) {
-    this.accountId = accountId;
+  public WatchListDesc(Account accountId) {
+    this.account = accountId;
   }
 
-  public WatchListDesc(int watchListId, int accountId, String watchListName,
+  public WatchListDesc(Long watchListId, Account accountId, String watchListName,
                        String watchListDetails, int marketDataFrequency, String dataProviders) {
-    this.watchListId = watchListId;
-    this.accountId = accountId;
+    this.id = watchListId;
+    this.account = accountId;
     this.watchListName = watchListName;
     this.watchListDetails = watchListDetails;
     this.marketDataFrequency = marketDataFrequency;
@@ -112,10 +141,18 @@ public class WatchListDesc implements IWatchListDesc {
 
   @Override
   public String toString() {
-    return String.valueOf(" account id =  " + this.getAccountId() + "\n " +
+    return String.valueOf(" account id =  " + this.getAccount() + "\n " +
       "data set id = " + this.getWatchListId() + "\n " +
       "market data freq = " + this.getMarketDataFrequency() + "\n " +
       "data set name = " + this.getWatchListName() + "\n " +
       "data set description = " + this.getWatchListDetails() + "\n ");
   }
+
+	public Long getId() {
+		return id;
+	}
+
+	public void setId(Long id) {
+		this.id = id;
+	}
 }

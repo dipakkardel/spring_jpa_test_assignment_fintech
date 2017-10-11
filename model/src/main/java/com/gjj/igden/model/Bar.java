@@ -1,23 +1,32 @@
 package com.gjj.igden.model;
 
-import com.gjj.igden.utils.IMetaDataUnit;
-import com.gjj.igden.utils.InstId;
-import com.gjj.igden.utils.InterfaceOHLCData;
+import com.gjj.igden.utils.EntityId;
 import com.google.common.base.Objects;
 import org.javatuples.Ennead;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.Table;
+import javax.persistence.Transient;
+
 @SuppressWarnings("WeakerAccess")
-public class Bar extends MarketData implements InterfaceOHLCData {
+@Entity
+@Table(name="Market_Data")
+public class Bar extends MarketData implements InterfaceOHLCData, EntityId {
     /**
      * mdId - i suppose this only for bar data_containers because for tick data_containers it is will
      * be impossible to supply all needed id
      */
-    protected Long mdId;
-    protected int dataSetId;
+    protected Long id;
+    protected IWatchListDesc dataSetId;
     protected int barSize;
     protected double open;
     protected double high;
@@ -29,37 +38,37 @@ public class Bar extends MarketData implements InterfaceOHLCData {
     public Bar() {
     }
 
-    public Bar(int dataSetId) {
+    public Bar(IWatchListDesc dataSetId) {
         this.dataSetId = dataSetId;
     }
 
-    public Bar(int dataSetId, int barSize) {
+    public Bar(IWatchListDesc dataSetId, int barSize) {
         this.dataSetId = dataSetId;
         this.barSize = barSize;
     }
 
     public Bar(long mdId) {
-        this.mdId = mdId;
+        this.id = mdId;
     }
 
-    public Bar(long mdId, int dataSetId, String instId) {
-        this.mdId = mdId;
+    public Bar(long mdId, IWatchListDesc dataSetId, String instId) {
+        this.id = mdId;
         this.dataSetId = dataSetId;
         this.instId = new InstId(instId);
     }
 
     public Bar(long mdId, String instId) {
-        this.mdId = mdId;
+        this.id = mdId;
         this.instId = new InstId(instId);
     }
 
-    public Bar(int dataSetId, String instId, int barSize) {
+    public Bar(IWatchListDesc dataSetId, String instId, int barSize) {
         this.dataSetId = dataSetId;
         this.instId = new InstId(instId);
         this.barSize = barSize;
     }
 
-    public Bar(int dataSetId, String instId) {
+    public Bar(IWatchListDesc dataSetId, String instId) {
         this.dataSetId = dataSetId;
         this.instId = new InstId(instId);
     }
@@ -67,7 +76,7 @@ public class Bar extends MarketData implements InterfaceOHLCData {
     public Bar(Bar bar) {
         super(bar.instId, bar.dateTime);
         this.dataSetId = bar.dataSetId;
-        this.mdId = bar.mdId;
+        this.id = bar.id;
         this.barSize = bar.barSize;
         this.open = bar.open;
         this.high = bar.high;
@@ -77,10 +86,10 @@ public class Bar extends MarketData implements InterfaceOHLCData {
         this.logInfo = bar.logInfo;
     }
 
-    public Bar(InstId instId, long dateTime, Long mdId, int dataSetId, int barSize, double open,
+    public Bar(InstId instId, long dateTime, Long mdId, IWatchListDesc dataSetId, int barSize, double open,
                double high, double low, double close, long volume, String logInfo) {
         super(instId, dateTime);
-        this.mdId = mdId;
+        this.id = mdId;
         this.dataSetId = dataSetId;
         this.barSize = barSize;
         this.open = open;
@@ -127,7 +136,7 @@ public class Bar extends MarketData implements InterfaceOHLCData {
             long mdId,
             String logInfo) {
         super(instId, dateTime);
-        this.mdId = mdId;
+        this.id = mdId;
         this.barSize = barSize;
         this.open = open;
         this.high = high;
@@ -146,22 +155,28 @@ public class Bar extends MarketData implements InterfaceOHLCData {
         setMainData(resultSet.getDataUnit());
     }
 
-    public Long getMdId() {
-        return mdId;
+    @Override
+    @Id
+    @GeneratedValue(strategy=GenerationType.AUTO)
+    public Long getId() {
+        return id;
     }
 
-    public void setMdId(Long mdId) {
-        this.mdId = mdId;
+    public void setId(Long mdId) {
+        this.id = mdId;
     }
 
-    public int getDataSetId() {
+    @Autowired
+    @Transient
+    public IWatchListDesc getDataSetId() {
         return dataSetId;
     }
 
-    public void setDataSetId(int dataSetId) {
+    public void setDataSetId(IWatchListDesc dataSetId) {
         this.dataSetId = dataSetId;
     }
 
+    @Transient
     public int getBarSize() {
         return barSize;
     }
@@ -214,6 +229,7 @@ public class Bar extends MarketData implements InterfaceOHLCData {
         this.logInfo = logInfo;
     }
 
+    @Column(name="additional_info")
     public String getLogInfo() {
         return this.logInfo;
     }
@@ -223,7 +239,7 @@ public class Bar extends MarketData implements InterfaceOHLCData {
         LocalDateTime time = LocalDateTime.ofInstant(fromUnixTimestamp,
                 ZoneId.of("UTC-4"));
         return "\n{ " +
-                "mdId=" + mdId +
+                "mdId=" + id +
                 "; instId=" + instId +
                 // 	", dateTime=" + dateTime +
                 "; dateTime=" + time +
@@ -257,19 +273,19 @@ public class Bar extends MarketData implements InterfaceOHLCData {
                 Objects.equal(open, bar.open) &&
                 Objects.equal(close, bar.close) &&
                 Objects.equal(volume, bar.volume) &&
-                Objects.equal(mdId, bar.mdId);
+                Objects.equal(id, bar.id);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hashCode(instId, dateTime, barSize, high, low, open, close, volume, mdId);
+        return Objects.hashCode(instId, dateTime, barSize, high, low, open, close, volume, id);
     }
 
     @Override
     public void reset() {
         super.reset();
         barSize = -1;
-        mdId = null;
+        id = null;
         high = 0.0;
         low = 0.0;
         open = 0.0;
@@ -280,7 +296,7 @@ public class Bar extends MarketData implements InterfaceOHLCData {
 
     public void copy(Bar bar) {
         this.instId = bar.instId;
-        this.mdId = bar.mdId;
+        this.id = bar.id;
         this.dateTime = bar.dateTime;
         this.barSize = bar.barSize;
         this.high = bar.high;
@@ -290,8 +306,8 @@ public class Bar extends MarketData implements InterfaceOHLCData {
         this.volume = bar.volume;
         this.logInfo = bar.logInfo;
     }
-
     @Override
+    @Transient
     public Ennead<InstId, Long, Long, Integer, Double, Double, Double, Double, Long> getMainData() {
         return null;
     }
@@ -299,7 +315,7 @@ public class Bar extends MarketData implements InterfaceOHLCData {
     public void setMainData(Ennead<InstId, Long, Long, Integer, Double, Double,
             Double, Double, Long> ennead) {
         this.instId = ennead.getValue0();
-        this.mdId = ennead.getValue1();
+        this.id = ennead.getValue1();
         this.dateTime = ennead.getValue2();
         this.barSize = ennead.getValue3();
         this.high = ennead.getValue4();
@@ -309,4 +325,5 @@ public class Bar extends MarketData implements InterfaceOHLCData {
         this.volume = ennead.getValue8();
         // this.logInfo = ennead.logInfo;
     }
+
 }

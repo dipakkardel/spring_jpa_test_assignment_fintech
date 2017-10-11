@@ -1,10 +1,13 @@
 package com.gjj.igden.model;
 
 import javax.persistence.*;
+
+import com.gjj.igden.utils.EntityId;
+
 import java.io.Serializable;
 
 @Entity
-public class BaseModel implements Serializable {
+public class BaseModel implements Serializable,EntityId {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
@@ -14,10 +17,12 @@ public class BaseModel implements Serializable {
     @Column(unique = true)
     private String code;
 
+    @Override
     public Long getId() {
         return id;
     }
 
+    @Override
     public void setId(Long id) {
         this.id = id;
     }

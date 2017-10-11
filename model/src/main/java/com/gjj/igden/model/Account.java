@@ -3,16 +3,19 @@ package com.gjj.igden.model;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
+import com.gjj.igden.utils.EntityId;
+import com.mysql.cj.jdbc.Blob;
+
 import javax.persistence.*;
 import java.util.*;
 
 
 @Entity
 @Table(name = "account")
-public class Account implements UserDetails {
+public class Account implements UserDetails, EntityId {
 
 	private static final long serialVersionUID = 4103535806827715305L;
-	private Integer id;
+	private Long id;
     private String accountName;
     private String email;
     private String additionalInfo;
@@ -20,6 +23,8 @@ public class Account implements UserDetails {
     private List<IWatchListDesc> descriptions;
     private String creationDate;
     private boolean enabled;
+    private Blob image;
+
     private Set<Role> roles = new HashSet<>();
 
     public Account() {
@@ -28,19 +33,19 @@ public class Account implements UserDetails {
     public Account(String accountName, String email, String additionalInfo, String password,
                    List<IWatchListDesc> descriptions, String creationDate) {
         this.accountName = accountName;
-        this.setEmail(email);
+         this.email = email;
         this.additionalInfo = additionalInfo;
         this.password = password;
         this.descriptions = descriptions;
         this.creationDate = creationDate;
     }
 
-    public Account(int id, String accountName, String email,
+    public Account(long id, String accountName, String email,
                    String additionalInfo, String password,
                    List<IWatchListDesc> dataSets, String creationDate) {
         this.id = id;
         this.accountName = accountName;
-        this.setEmail(email);
+        this.email = email;
         this.additionalInfo = additionalInfo;
         this.password = password;
         this.descriptions = dataSets;
@@ -50,15 +55,15 @@ public class Account implements UserDetails {
     public Account(String accountName, String email,
                    String additionalInfo) {
         this.accountName = accountName;
-        this.setEmail(email);
+        this.email = email;
         this.additionalInfo = additionalInfo;
     }
 
-    public Account(Integer id, String accountName, String email, String additionalInfo,
+    public Account(long id, String accountName, String email, String additionalInfo,
                    String creationDate) {
         this.id = id;
         this.accountName = accountName;
-        this.setEmail(email);
+        this.email = email;
         this.additionalInfo = additionalInfo;
         this.creationDate = creationDate;
     }
@@ -71,13 +76,16 @@ public class Account implements UserDetails {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "account_Id")
-    public Integer getId() {
-        return id;
-    }
+    @Override
+	public Long getId() {
+		// TODO Auto-generated method stub
+    	return id;
+	}
 
-    public void setId(int id) {
-        this.id = id;
-    }
+	@Override
+	public void setId(Long id) {
+		this.id = id;
+	}
 
     public Account(int accountId, String accountName, String email, String additionalInfo) {
         this(accountId, accountName, email, additionalInfo, (String) null);
@@ -229,4 +237,5 @@ public class Account implements UserDetails {
     public void setEmail(String email) {
         this.email = email;
     }
+
 }

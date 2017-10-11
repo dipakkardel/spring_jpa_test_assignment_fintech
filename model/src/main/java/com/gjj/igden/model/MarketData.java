@@ -1,11 +1,17 @@
 package com.gjj.igden.model;
 
-import com.gjj.igden.utils.InstId;
-
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
+import javax.persistence.CascadeType;
+import javax.persistence.Column;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.MappedSuperclass;
+import javax.persistence.Transient;
+
+@MappedSuperclass
 public abstract class MarketData {
   /**
    * instance Id as a tool for solving some problems : for example conditional problems ( like
@@ -23,6 +29,8 @@ public abstract class MarketData {
     this.dateTime = dateTime;
   }
 
+  @ManyToOne(cascade=CascadeType.ALL)
+  @JoinColumn(name = "instId_fk")
   public InstId getInstId() {
     return instId;
   }
@@ -35,10 +43,16 @@ public abstract class MarketData {
     this.instId = instId;
   }
 
+  @Column(name="ticker")
   public String getTicket() {
     return instId.getSymbol();
   }
+  
+  public void setTicket(String symbol) {
+	     instId.setSymbol(symbol);
+	  }
 
+  @Column(name="date")
   public long getDateTime() {
     return dateTime;
   }
@@ -56,6 +70,7 @@ public abstract class MarketData {
     this.dateTime = date.getTime() / 1000;
   }
 
+  @Transient
   public String getDateTimeMySQLFormat() throws ParseException {
     Date dateFromEpoch = new Date(dateTime * 1000);
     SimpleDateFormat df = new SimpleDateFormat(MYSQL_TIME_FORMAT);

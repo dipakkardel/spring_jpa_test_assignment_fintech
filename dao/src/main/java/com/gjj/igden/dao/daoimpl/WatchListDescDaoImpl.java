@@ -11,6 +11,7 @@ import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.stereotype.Repository;
+import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.sql.DataSource;
@@ -32,7 +33,7 @@ public class WatchListDescDaoImpl implements WatchListDescDao {
         this.namedParamJbd = namedParamJbd;
     }
 
-    public List<String> getAllStockSymbols(int watchListDescId) {
+    public List<String> getAllStockSymbols(Long watchListDescId) {
         SqlParameterSource params = new MapSqlParameterSource("id", watchListDescId);
         String sqlQuery = "SELECT instId FROM wl_tickers WHERE watchlist_id_fk = :id";
         return namedParamJbd.query(sqlQuery, params, new WatchListTickersRowMapper());
@@ -43,7 +44,7 @@ public class WatchListDescDaoImpl implements WatchListDescDao {
         final String getDataFromDataSetTable = "SELECT * FROM data_set WHERE account_fk_id = :accountId";
         List<IWatchListDesc> watchListDescs = namedParamJbd.query(getDataFromDataSetTable,
                 params, new WatchListDescRowMapper());
-        watchListDescs.forEach(p -> p.setStockSymbolsList(getAllStockSymbols(p.getWatchListId())));
+        watchListDescs.forEach(p -> p.setStockSymbolsList(getAllStockSymbols(p.getId())));
         return watchListDescs;
     }
 
@@ -103,7 +104,7 @@ public class WatchListDescDaoImpl implements WatchListDescDao {
     @Transactional
     public boolean createWatchListDescFields(IWatchListDesc watchListDesc) {
         MapSqlParameterSource parameters = new MapSqlParameterSource();
-        parameters.addValue("accId", watchListDesc.getAccountId(), Types.INTEGER);
+        parameters.addValue("accId", watchListDesc.getAccount(), Types.INTEGER);
         parameters.addValue("data_set_name", watchListDesc.getWatchListName());
         parameters.addValue("market_data_frequency", watchListDesc.getMarketDataFrequency());
         parameters.addValue("data_set_description", watchListDesc.getWatchListDetails());
@@ -127,8 +128,8 @@ public class WatchListDescDaoImpl implements WatchListDescDao {
     @Transactional
     public boolean updateWatchListDesc(IWatchListDesc watchListDesc) {
         Map<String, Object> parameters = new HashMap<>();
-        parameters.put("data_set_id", watchListDesc.getWatchListId());
-        parameters.put("account_fk_id", watchListDesc.getAccountId());
+        parameters.put("data_set_id", watchListDesc.getId());
+        parameters.put("account_fk_id", watchListDesc.getAccount());
         parameters.put("data_set_name", watchListDesc.getWatchListName());
         String sqlQuery = "UPDATE data_set SET data_set_name = :data_set_name " +
                 "WHERE data_set_id = :data_set_id AND account_fk_id = :account_fk_id";
