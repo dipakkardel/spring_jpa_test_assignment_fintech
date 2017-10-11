@@ -2,6 +2,7 @@ package com.gjj.igden.service.test;
 
 import com.gjj.igden.service.watchlist.WatchListDescService;
 import com.gjj.igden.service.test.daostub.WatchListDescDaoStub;
+import com.gjj.igden.model.Account;
 import com.gjj.igden.model.IWatchListDesc;
 import org.junit.Assert;
 import org.junit.Test;
@@ -28,19 +29,19 @@ public class WatchListDescServiceTest {
 
   @Test
   public void simpleReadTest() throws Exception {
-    watchListDescService.getStockSymbolsList(1).forEach(System.out::println);
+    watchListDescService.getStockSymbolsList(1L).forEach(System.out::println);
   }
 
   @Test
   public void testCreateH2DataBaseTest() {
-    List<IWatchListDesc> dataSetList = watchListDescService.getDataSetsAttachedToAcc(1);
+    List<IWatchListDesc> dataSetList = watchListDescService.getDataSetsAttachedToAcc(1L);
     final int expectedDataSetsAmount = 4;
     Assert.assertEquals(expectedDataSetsAmount, dataSetList.size());
   }
 
   @Test
   public void testReturnBarList() {
-    IWatchListDesc dataSet = watchListDescService.getDataSetsAttachedToAcc(2).get(0);
+    IWatchListDesc dataSet = watchListDescService.getDataSetsAttachedToAcc(2L).get(0);
     System.out.println(dataSet.getWatchListName());
     Assert.assertNotNull(dataSet);
     Assert.assertEquals("test-aapl-5minBar-preMarketdata", dataSet.getWatchListName());
@@ -48,46 +49,50 @@ public class WatchListDescServiceTest {
 
   @Test
   public void testDelete02() throws Exception {
-    List<IWatchListDesc> dataSetList = watchListDescService.getDataSetsAttachedToAcc(1);
+    List<IWatchListDesc> dataSetList = watchListDescService.getDataSetsAttachedToAcc(1L);
     final int expectedDataSetsAmount = dataSetList.size();
     boolean deleteResultFlag = watchListDescService.delete(dataSetList.get(0));
     Assert.assertTrue(deleteResultFlag);
     System.out.println("after deletion ");
-    dataSetList = watchListDescService.getDataSetsAttachedToAcc(1);
+    dataSetList = watchListDescService.getDataSetsAttachedToAcc(1L);
     Assert.assertNotEquals(expectedDataSetsAmount, dataSetList.size());
   }
 
   @Test
   public void testCreateDataSet() throws Exception {
-    int accId = 1;
-    IWatchListDesc newWatchList = watchListDescService.getWatchListDesc(1, accId);
-    List<IWatchListDesc> dataSetList = watchListDescService.getDataSetsAttachedToAcc(1);
+    Long accId = 1L;
+    IWatchListDesc newWatchList = watchListDescService.getWatchListDesc(1L, accId);
+    List<IWatchListDesc> dataSetList = watchListDescService.getDataSetsAttachedToAcc(1L);
     int expectedDataSetsAmountAfterDeletion = 4;
     Assert.assertEquals(expectedDataSetsAmountAfterDeletion, dataSetList.size());
     Assert.assertNotNull(newWatchList);
-    newWatchList.setWatchListId(111);
-    newWatchList.setAccountId(accId);
+    newWatchList.setId(111L);
+    Account account = new Account();
+    account.setId(accId);
+    newWatchList.setAccount(account);
     newWatchList.setWatchListName("just testing around");
     Assert.assertTrue(watchListDescService.create(newWatchList));
-    dataSetList = watchListDescService.getDataSetsAttachedToAcc(1);
+    dataSetList = watchListDescService.getDataSetsAttachedToAcc(1L);
     expectedDataSetsAmountAfterDeletion = 5;
     Assert.assertEquals(expectedDataSetsAmountAfterDeletion, dataSetList.size());
   }
 
   @Test
   public void testUpdate() throws Exception {
-    final int accId = 1;
-    IWatchListDesc dataSet = watchListDescService.getWatchListDesc(1, accId);
+    final Long accId = 1L;
+    IWatchListDesc dataSet = watchListDescService.getWatchListDesc(1L, accId);
     dataSet.setWatchListName("test update");
-    dataSet.setAccountId(accId);
+    Account account = new Account();
+    account.setId(accId);
+    dataSet.setAccount(account);
     watchListDescService.update(dataSet);
-    final String dataSetNameDirect = watchListDescService.getWatchListDesc(1, 1).getWatchListName();
+    final String dataSetNameDirect = watchListDescService.getWatchListDesc(1L, 1L).getWatchListName();
     Assert.assertEquals("test update", dataSetNameDirect);
   }
 
   @Test
   public void test01Read() throws Exception {
-    List<IWatchListDesc> watchListDescs = watchListDescService.getDataSetsAttachedToAcc(1);
+    List<IWatchListDesc> watchListDescs = watchListDescService.getDataSetsAttachedToAcc(1L);
     final int size = 4;
     Assert.assertEquals(size,
       watchListDescs.size());

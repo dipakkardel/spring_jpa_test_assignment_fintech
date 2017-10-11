@@ -238,4 +238,17 @@ public class Account implements UserDetails, EntityId {
         this.email = email;
     }
 
+    @Column
+	public Blob getImage() {
+		return image;
+	}
+
+	public void setImage(Blob image) {
+		this.image = image;
+	}
+
+	public List<IWatchListDesc> getDescriptions() {
+		return descriptions;
+	}
+
 }

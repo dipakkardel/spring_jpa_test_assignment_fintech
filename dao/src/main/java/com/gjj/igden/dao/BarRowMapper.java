@@ -12,7 +12,7 @@ public class BarRowMapper implements RowMapper<Bar> {
   public Bar mapRow(ResultSet resultSet, int i) throws SQLException {
     Bar bar = new Bar();
     try {
-      bar.setMdId(resultSet.getLong("md_id"));
+      bar.setId(resultSet.getLong("md_id"));
       bar.setInstId(resultSet.getString("instId_fk"));
       bar.setDateTime(resultSet.getString("date"));
       bar.setOpen(resultSet.getDouble("open"));

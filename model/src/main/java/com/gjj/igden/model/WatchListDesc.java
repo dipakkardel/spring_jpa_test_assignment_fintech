@@ -46,8 +46,13 @@ public class WatchListDesc implements IWatchListDesc, Serializable, EntityId {
 	@Transient
 	private  List<OperationParameters> operationParameterses = LazyList.lazyList(new ArrayList<>(),
 			FactoryUtils.instantiateFactory(OperationParameters.class));
+	
+	public WatchListDesc(Long id) {
+		super();
+		this.id = id;
+	}
 
-  public List<String> getStockSymbolsList() {
+public List<String> getStockSymbolsList() {
     return stockSymbolsList;
   }
 

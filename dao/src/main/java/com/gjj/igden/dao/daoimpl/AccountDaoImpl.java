@@ -1,106 +1,97 @@
 package com.gjj.igden.dao.daoimpl;
 
-import com.gjj.igden.dao.AccountByteArraysRowMapper;
-import com.gjj.igden.dao.AccountRowMapper;
-import com.gjj.igden.dao.AccountDao;
+import com.gjj.igden.dao.AbstractDAO;
+import com.gjj.igden.dao.daoUtil.DAOException;
 import com.gjj.igden.model.Account;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.jdbc.core.namedparam.BeanPropertySqlParameterSource;
-import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
-import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
-import org.springframework.jdbc.core.namedparam.SqlParameterSource;
+import org.apache.commons.io.IOUtils;
 import org.springframework.stereotype.Repository;
-import org.springframework.transaction.annotation.Transactional;
+import javax.persistence.Query;
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Root;
+import javax.transaction.Transactional;
 
-import javax.sql.DataSource;
+import java.io.IOException;
 import java.io.InputStream;
-import java.sql.Types;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-import java.util.Date;
 import java.util.List;
 
 @Repository
-public class AccountDaoImpl implements AccountDao {
-    private NamedParameterJdbcTemplate namedParamJbd;
+@Transactional
+public class AccountDaoImpl extends AbstractDAO<Account> {
 
-    @Autowired
-    public void setDataSource(DataSource dataSource) {
-        namedParamJbd = new NamedParameterJdbcTemplate(dataSource);
+	@Override
+    public void create(Account account) throws DAOException {
+        super.create(account);
+        insertAvatar(account, getDefaultAvatar());
     }
 
     @Override
-    public void setNamedParamJbd(NamedParameterJdbcTemplate namedParamJbd) {
-        this.namedParamJbd = namedParamJbd;
-    }
-
-    public List<Account> getAllAccounts() {
-        String sqlQuery = "SELECT * FROM account;";
-        return namedParamJbd.query(sqlQuery, new AccountRowMapper());
-    }
-
-    @Transactional
-    public boolean delete(Account account) {
-        SqlParameterSource beanParams = new BeanPropertySqlParameterSource(account);
-        String sqlQuery = "DELETE FROM account WHERE account_id = :id ";
-        return namedParamJbd.update(sqlQuery, beanParams) == 1;
-    }
-
-    @Transactional
-    public boolean delete(int id) {
-        Account account = this.getAccountById(id);
-        SqlParameterSource beanParams = new BeanPropertySqlParameterSource(account);
-        String sqlQuery = "DELETE FROM account WHERE account_id = :id ";
-        return namedParamJbd.update(sqlQuery, beanParams) == 1;
-    }
-
-    public Account getAccountById(int id) {
-        SqlParameterSource params = new MapSqlParameterSource("ID", id);
-        String sqlQuery = "SELECT account_id,account_name,email, additional_info, creation_date " +
-                "FROM account WHERE account_id = :ID ";
-        return namedParamJbd.queryForObject(sqlQuery, params, new AccountRowMapper());
-    }
-
-    @Transactional
-    public boolean update(Account acc) {
-        SqlParameterSource beanParams = new BeanPropertySqlParameterSource(acc);
-        String sqlQuery =
-                "UPDATE account SET additional_info = :additionalInfo, " +
-                        "account_name =:accountName," +
-                        "email =:email " +
-                        "WHERE account_id = :id ";
-        return namedParamJbd.update(sqlQuery, beanParams) == 1;
-    }
-
-    @Transactional
-    public boolean create(Account account) {
-        DateFormat df = new SimpleDateFormat("dd/MM/yy");
-        Date dateobj = new Date();
-        String creationDate = df.format(dateobj);
-        account.setCreationDate(creationDate);
-        SqlParameterSource beanParams = new BeanPropertySqlParameterSource(account);
-        String sqlQuery = "INSERT INTO account ( account_name, email," +
-                " additional_info, password,  creation_date  ) " +
-                "VALUES ( :accountName, :email, :additionalInfo, :password,:creationDate);";
-        return namedParamJbd.update(sqlQuery, beanParams) == 1;
-    }
-
-    @Transactional
-    public boolean setImage(int accId, InputStream is) {
-        MapSqlParameterSource params = new MapSqlParameterSource("", is);
-        params.addValue("accId", accId, Types.INTEGER);
-        params.addValue("image", is, Types.BLOB);
-        String sqlQuery = "UPDATE account SET image = :image WHERE account_id = :accId";
-        return namedParamJbd.update(sqlQuery, params) == 1;
+    public Account read(Account account) {
+            return em.find(Account.class, account.getId());
     }
 
     @Override
-    public byte[] getImage(int accId) {
-        //getAccountById(accId);
-        MapSqlParameterSource parameters = new MapSqlParameterSource();
-        parameters.addValue("accId", accId, Types.INTEGER);
-        String sqlQuery = "SELECT image from account WHERE account_id = :accId";
-        byte[] bytes = namedParamJbd.query(sqlQuery, parameters, new AccountByteArraysRowMapper()).get(0);
-        return bytes;
+    public List<Account> readAll() {
+      /*  CriteriaQuery<Account> cq = getAccountCriteriaQuery();
+        System.out.println("fetching all");*/
+        return em.createQuery("from account").getResultList();
     }
+
+    private CriteriaQuery<Account> getAccountCriteriaQuery() {
+        CriteriaBuilder cb = em.getCriteriaBuilder();
+        CriteriaQuery<Account> cq = cb.createQuery(Account.class);
+        Root<Account> root = cq.from((Account.class));
+        cq.select(root);
+        return cq;
+    }
+
+//  Avatar
+
+    public byte[] getAvatar(Account account) throws DAOException {
+        Query query = em.createNativeQuery("SELECT bytes FROM account_avatars WHERE account_id =(:id);");
+        query.setParameter("id", account.getId());
+        return getBytesFromDB(query);
+    }
+
+    public byte[] getDefaultAvatar() throws DAOException {
+        try (InputStream is = this.getClass().getClassLoader().getResourceAsStream("default.jpg")) {
+            return IOUtils.toByteArray(is);
+        } catch (IOException e) {
+            throw new DAOException(e.getMessage(), e);
+        }
+    }
+
+    private int insertAvatar(Account account, byte[] avatar) {
+        Query query = em.createNativeQuery("INSERT INTO account_avatars(account_id, bytes) VALUES (:id, :avatar);");
+        query.setParameter("id", account.getId());
+        query.setParameter("avatar", avatar);
+        return query.executeUpdate();
+    }
+
+    public int updateAvatar(Account account, byte[] avatar) {
+        Query query = em.createNativeQuery("UPDATE account_avatars SET bytes = (:avatar) WHERE account_id = (:id);");
+        query.setParameter("id", account.getId());
+        query.setParameter("avatar", avatar);
+        return query.executeUpdate();
+    }
+    
+    public void delete(Account id) {
+       super.delete(id);
+    }
+
+    
+    public void update(Account acc) {
+    	super.update(acc);
+    }
+
+	public boolean setImage(long accId, InputStream is) {
+		return false;
+		
+	}
+
+	public byte[] getImage(int accId) {
+		return null;
+		
+	}
+    
 }

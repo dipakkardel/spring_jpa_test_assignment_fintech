@@ -1,4 +1,3 @@
-<script type="text/javascript">
 
 
 
@@ -165,5 +164,3 @@ $(document).ready(function () {
     $(this).rules("add", { required : true, minlength: 2 });
 });*/
 
-
-</script>

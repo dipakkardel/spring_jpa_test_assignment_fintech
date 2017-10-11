@@ -16,15 +16,15 @@ public interface AccountDao {
 
   boolean delete(Account account);
 
-  boolean delete(int id);
+  boolean delete(Long id);
 
-  Account getAccountById(int id);
+  Account getAccountById(Long id);
 
   boolean update(Account acc);
 
   boolean create(Account account);
 
-  boolean setImage(int accId, InputStream is);
+  boolean setImage(Long accId, InputStream is);
 
-  byte[] getImage(int accId);
+  byte[] getImage(Long accId);
 }

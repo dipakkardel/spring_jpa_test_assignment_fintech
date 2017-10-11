@@ -13,15 +13,15 @@ public class WatchListDescService {
 	@Autowired
 	private WatchListDescDao watchListDescDao;
 
-	public List<IWatchListDesc> getDataSetsAttachedToAcc(int id) {
+	public List<IWatchListDesc> getDataSetsAttachedToAcc(Long id) {
 		return watchListDescDao.getDataSetsAttachedToAcc(id);
 	}
 
-	public List<String> getStockSymbolsList(long id) {
+	public List<String> getStockSymbolsList(Long id) {
 		return watchListDescDao.getAllStockSymbols(id);
 	}
 
-	public boolean delete(int accId, int watchListId) {
+	public boolean delete(Long accId, Long watchListId) {
 		return watchListDescDao.deleteWatchListDesc(watchListId, accId);
 	}
 
@@ -34,7 +34,7 @@ public class WatchListDescService {
 		return watchListDescDao.createWatchListDesc(watchListDesc);
 	}
 
-	public IWatchListDesc getWatchListDesc(int dsId, int accId) {
+	public IWatchListDesc getWatchListDesc(Long dsId, Long accId) {
 		return watchListDescDao.getWatchListDesc(dsId, accId);
 	}
 

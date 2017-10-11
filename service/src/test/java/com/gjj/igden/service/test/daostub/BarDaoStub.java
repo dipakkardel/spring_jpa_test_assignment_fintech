@@ -2,7 +2,7 @@ package com.gjj.igden.service.test.daostub;
 
 import com.gjj.igden.model.Bar;
 import com.gjj.igden.dao.BarDao;
-import com.gjj.igden.dao.daoUtil.DaoException;
+import com.gjj.igden.dao.daoUtil.DAOException;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Maps;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
@@ -41,7 +41,7 @@ public class BarDaoStub implements BarDao {
   @Override
   public Bar getSingleBar(long mdId, String instId) {
     return marketDataDbSimulator.get(WATCHLIST_ID).get(instId)
-      .stream().filter(p -> (p.getMdId().equals(mdId))).findFirst().get();
+      .stream().filter(p -> (p.getId().equals(mdId))).findFirst().get();
   }
 
   @Override
@@ -52,30 +52,30 @@ public class BarDaoStub implements BarDao {
   @Override
   public boolean updateBar(Bar bar) {
     marketDataDbSimulator.get(WATCHLIST_ID).get(bar.getInstId().toString())
-      .stream().filter(p -> p.getMdId().equals(bar.getMdId())).findFirst()
+      .stream().filter(p -> p.getId().equals(bar.getId())).findFirst()
       .ifPresent(m -> {
         m.reset();
         m.copy(bar);
       });
-    return getSingleBar(bar.getMdId(), bar.getInstId().toString()).equals(bar);
+    return getSingleBar(bar.getId(), bar.getInstId().toString()).equals(bar);
   }
 
   @Override
-  public boolean createBar(Bar bar) throws DaoException {
+  public boolean createBar(Bar bar) throws DAOException {
     return marketDataDbSimulator.get(WATCHLIST_ID).get(bar.getInstId().toString()).add(bar);
   }
 
   @Override
   public boolean deleteBar(long mdId, String instId) {
     marketDataDbSimulator.get(WATCHLIST_ID).get(instId).stream()
-      .filter(p -> p.getMdId().equals(mdId))
+      .filter(p -> p.getId().equals(mdId))
       .findFirst().ifPresent(Bar::reset);
     return true;
   }
 
   @Override
   public boolean deleteBar(Bar bar) {
-    return deleteBar(bar.getMdId(), bar.getInstId().toString());
+    return deleteBar(bar.getId(), bar.getInstId().toString());
   }
 
   @Override

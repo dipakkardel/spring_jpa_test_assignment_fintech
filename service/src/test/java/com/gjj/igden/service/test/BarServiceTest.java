@@ -58,14 +58,14 @@ public class BarServiceTest {
     Bar bar = barService.getSingleBar(2, "AAPL@NASDAQ");
     System.out.println(bar);
     Assert.assertNotNull(bar);
-    bar.setMdId(111L);
+    bar.setId(111L);
     System.out.println(bar);
     Assert.assertTrue(barService.createBar(bar));
     List<Bar> barList = barService.getBarList("AAPL@NASDAQ");
     Bar newBar = barList.stream()
-      .filter(p -> Objects.equals(p.getMdId(), 111L)).findAny().get();
+      .filter(p -> Objects.equals(p.getId(), 111L)).findAny().get();
     System.out.println(newBar);
-    Assert.assertEquals(Long.valueOf(111), newBar.getMdId());
+    Assert.assertEquals(Long.valueOf(111), newBar.getId());
   }
 
   @Test

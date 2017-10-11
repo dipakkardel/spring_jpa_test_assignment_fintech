@@ -1,7 +1,6 @@
 
 
 
-<script type="text/javascript">
     $.validator.setDefaults({
         submitHandler: function () {
             alert("submitted!");
@@ -140,4 +139,3 @@ $(document).ready(function () {
         }
     });
 });
-</script>

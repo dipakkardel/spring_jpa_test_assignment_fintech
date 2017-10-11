@@ -50,7 +50,7 @@ public class AccountDaoTest {
 
   @Test
   public void testReadById() throws Exception {
-    Account account = testAccountDao.getAccountById(1);
+    Account account = testAccountDao.getAccountById(1L);
     Assert.assertNotNull(account);
   }
 
@@ -66,11 +66,11 @@ public class AccountDaoTest {
 
   @Test
   public void testUpdate() throws Exception {
-    Account accounts = testAccountDao.getAccountById(1);
+    Account accounts = testAccountDao.getAccountById(1L);
     String oldInfo = accounts.getAdditionalInfo();
     accounts.setAdditionalInfo("test update");
     testAccountDao.update(accounts);
-    final String additionalInfo = testAccountDao.getAccountById(1).getAdditionalInfo();
+    final String additionalInfo = testAccountDao.getAccountById(1L).getAdditionalInfo();
     Assert.assertNotEquals(oldInfo, additionalInfo);
     Assert.assertEquals("test update", additionalInfo);
   }

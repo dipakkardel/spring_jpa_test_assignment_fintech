@@ -1,6 +1,6 @@
 package com.gjj.igden.dao;
 
-import com.gjj.igden.dao.daoUtil.DaoException;
+import com.gjj.igden.dao.daoUtil.DAOException;
 import com.gjj.igden.model.Bar;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 
@@ -12,7 +12,7 @@ public interface BarDao {
 
   List<Bar> getBarList( String instId);
 
-  boolean createBar(Bar bar) throws DaoException;
+  boolean createBar(Bar bar) throws DAOException;
 
   boolean updateBar(Bar bar);
 

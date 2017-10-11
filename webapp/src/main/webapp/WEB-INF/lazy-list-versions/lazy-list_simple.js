@@ -1,4 +1,3 @@
-<script type="text/javascript">
 
     function addRow(tableID) {
 
@@ -87,5 +86,3 @@ $(document).ready(function () {
 });
 
 
-
-</script>

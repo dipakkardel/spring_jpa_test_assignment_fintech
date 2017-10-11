@@ -30,12 +30,12 @@ public class WatchListDescDaoStub implements WatchListDescDao {
   }
 
   @Override
-  public List<String> getAllStockSymbols(int id) {
+  public List<String> getAllStockSymbols(Long id) {
     return Stream.of("C@NYSE", "GS@NYSE").collect(Collectors.toList());
   }
 
   @Override
-  public List<IWatchListDesc> getDataSetsAttachedToAcc(int id) {
+  public List<IWatchListDesc> getDataSetsAttachedToAcc(Long id) {
     return watchListDescsDb.get(id);
   }
 
@@ -44,17 +44,17 @@ public class WatchListDescDaoStub implements WatchListDescDao {
   }
 
   @Override
-  public IWatchListDesc getWatchListDesc(int dsId, int accId) {
-    return watchListDescsDb.get(accId).get(dsId);
+  public IWatchListDesc getWatchListDesc(Long dsId, Long accId) {
+    return watchListDescsDb.get(accId).get(dsId.intValue());
   }
 
   @Override
-  public boolean addTicker(int watchlistId, String tickerName) {
+  public boolean addTicker(Long watchlistId, String tickerName) {
     return true;
   }
 
   @Override
-  public boolean deleteWatchListDesc(int dsId, int accId) {
+  public boolean deleteWatchListDesc(Long dsId, Long accId) {
     return false;
   }
 
@@ -70,12 +70,12 @@ public class WatchListDescDaoStub implements WatchListDescDao {
 
   @Override
   public boolean createWatchListDesc(IWatchListDesc watchListDesc) {
-    return watchListDescsDb.get(watchListDesc.getAccountId()).add(watchListDesc);
+    return watchListDescsDb.get(watchListDesc.getAccount()).add(watchListDesc);
   }
 
   @Override
   public boolean updateWatchListDesc(IWatchListDesc watchListDesc) {
-    watchListDescsDb.get(watchListDesc.getAccountId()).stream()
+    watchListDescsDb.get(watchListDesc.getAccount()).stream()
       .filter(a -> a.equals(watchListDesc))
       .findFirst()
       .ifPresent(p -> p.setWatchListName(watchListDesc.getWatchListName()));

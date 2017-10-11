@@ -132,30 +132,30 @@ public class DaoSqlUtil {
   }
 
   public static void updateTableFromPrepStatementOneParamString(String strPar, String sql,
-                                                                Connection conn) throws DaoException {
+                                                                Connection conn) throws DAOException {
     try (PreparedStatement psNewBar = conn.prepareStatement(sql)) {
       psNewBar.setString(1, strPar);
       psNewBar.executeUpdate();
     } catch (SQLException e1) {
-      throw new DaoException.ExceptionBuilder().setException(e1).build();
+      throw new DAOException(e1.getMessage());
     }
   }
 
-  public static void executableUpdateQuery(String sql, Connection conn) throws DaoException {
+  public static void executableUpdateQuery(String sql, Connection conn) throws DAOException {
     executableUpdateQuery(sql, conn, false);
   }
 
   public static void executableUpdateQuery(String sql, Connection conn,
-                                           boolean isChangesCommittable) throws DaoException {
+                                           boolean isChangesCommittable) throws DAOException {
     try {
       conn.createStatement().executeUpdate(sql);
       if (isChangesCommittable) {
         conn.commit();
       }
-    } catch (SQLException se) {
-      throw new DaoException.ExceptionBuilder().setException(se).build();
+    } catch (SQLException e) {
+    	throw new DAOException(e.getMessage());
     } catch (@SuppressWarnings("TryWithIdenticalCatches") Exception e) {
-      throw new DaoException.ExceptionBuilder().setException(e).build();
+    	throw new DAOException(e.getMessage());
     }
   }
 }

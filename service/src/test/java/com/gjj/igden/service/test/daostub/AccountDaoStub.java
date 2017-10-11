@@ -54,21 +54,21 @@ public class AccountDaoStub implements AccountDao {
     return false;
   }
 
-  public boolean delete(int id) {
+  public boolean delete(Long id) {
     if (accountDbSimulator.get(id) != null) {
-      accountDbSimulator.put(id, null);
+      accountDbSimulator.put(id.intValue(), null);
       return true;
     } else {
       return false;
     }
   }
 
-  public Account getAccountById(int id) {
+  public Account getAccountById(Long id) {
     return accountDbSimulator.get(1);
   }
 
   public boolean update(Account acc) {
-    return accountDbSimulator.put(acc.getId(), acc) == acc;
+    return accountDbSimulator.put(acc.getId().intValue(), acc) == acc;
   }
 
   public boolean create(Account account) {
@@ -80,12 +80,12 @@ public class AccountDaoStub implements AccountDao {
   }
 
   @Override
-  public boolean setImage(int accId, InputStream is) {
+  public boolean setImage(Long accId, InputStream is) {
     return true;
   }
 
   @Override
-  public byte[] getImage(int accId) {
+  public byte[] getImage(Long accId) {
     return new byte[0];
   }
 }

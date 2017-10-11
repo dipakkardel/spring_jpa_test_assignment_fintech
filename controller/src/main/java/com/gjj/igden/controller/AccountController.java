@@ -82,7 +82,7 @@ public class AccountController {
   }
 
   @RequestMapping(value = "/edit-account", method = RequestMethod.GET)
-  public String getAccountToEditAndPopulateForm(ModelMap model, @RequestParam int id) {
+  public String getAccountToEditAndPopulateForm(ModelMap model, @RequestParam Long id) {
     Account account = service.retrieveAccount(id);
     service.updateAccount(account);
     model.addAttribute("account", account);
@@ -123,7 +123,7 @@ public class AccountController {
   }
 
   @RequestMapping(value = "/view-account", method = RequestMethod.GET)
-  public String viewAccount(ModelMap model, @RequestParam int id) {
+  public String viewAccount(ModelMap model, @RequestParam Long id) {
     Account account = service.retrieveAccount(id);
     model.addAttribute("watchLists", account.getAttachedWatchedLists());
     model.addAttribute("account", account);

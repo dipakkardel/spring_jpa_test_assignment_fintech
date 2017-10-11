@@ -39,7 +39,7 @@ public class WatchListDescDaoImpl implements WatchListDescDao {
         return namedParamJbd.query(sqlQuery, params, new WatchListTickersRowMapper());
     }
 
-    public List<IWatchListDesc> getDataSetsAttachedToAcc(int accId) {
+    public List<IWatchListDesc> getDataSetsAttachedToAcc(Long accId) {
         SqlParameterSource params = new MapSqlParameterSource("accountId", accId);
         final String getDataFromDataSetTable = "SELECT * FROM data_set WHERE account_fk_id = :accountId";
         List<IWatchListDesc> watchListDescs = namedParamJbd.query(getDataFromDataSetTable,
@@ -48,7 +48,7 @@ public class WatchListDescDaoImpl implements WatchListDescDao {
         return watchListDescs;
     }
 
-    public IWatchListDesc getWatchListDesc(int dsId, int accId) {
+    public IWatchListDesc getWatchListDesc(Long dsId, Long accId) {
         Map<String, Object> parameters = new HashMap<>();
         parameters.put("accId", accId);
         parameters.put("dsId", dsId);
@@ -58,7 +58,7 @@ public class WatchListDescDaoImpl implements WatchListDescDao {
     }
 
     @Override
-    public boolean addTicker(int watchlistId, String tickerName) {
+    public boolean addTicker(Long watchlistId, String tickerName) {
         Map<String, Object> paramMap = new HashMap<>();
         paramMap.put("watchlistId", watchlistId);
         paramMap.put("tickerName", tickerName);
@@ -68,7 +68,7 @@ public class WatchListDescDaoImpl implements WatchListDescDao {
     }
 
     @Transactional
-    public boolean deleteWatchListDesc(int dsId, int accId) {
+    public boolean deleteWatchListDesc(Long dsId, Long accId) {
         IWatchListDesc dataSet = this.getWatchListDesc(dsId, accId);
         SqlParameterSource beanParams = new BeanPropertySqlParameterSource(dataSet);
         String sqlQuery = "	DELETE FROM data_set WHERE data_set_id = :watchListId" +
@@ -135,4 +135,5 @@ public class WatchListDescDaoImpl implements WatchListDescDao {
                 "WHERE data_set_id = :data_set_id AND account_fk_id = :account_fk_id";
         return namedParamJbd.update(sqlQuery, parameters) == 1;
     }
+
 }

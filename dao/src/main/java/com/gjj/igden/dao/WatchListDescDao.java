@@ -15,15 +15,15 @@ public interface WatchListDescDao {
 	
 	List<String> getAllStockSymbols(Long id);
 
-	List<IWatchListDesc> getDataSetsAttachedToAcc(int id);
+	List<IWatchListDesc> getDataSetsAttachedToAcc(Long id);
 
 	void setNamedParamJbd(NamedParameterJdbcTemplate namedParamJbd);
 
-	IWatchListDesc getWatchListDesc(int dsId, int accId);
+	IWatchListDesc getWatchListDesc(Long dsId, Long accId);
 
-	boolean addTicker(int watchlistId, String tickerName);
+	boolean addTicker(Long watchlistId, String tickerName);
 
-	boolean deleteWatchListDesc(int dsId, int accId);
+	boolean deleteWatchListDesc(Long dsId, Long accId);
 
 	boolean deleteWatchListDesc(IWatchListDesc watchListDesc);
 

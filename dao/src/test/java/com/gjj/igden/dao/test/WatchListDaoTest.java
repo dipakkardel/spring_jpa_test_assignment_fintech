@@ -43,14 +43,14 @@ public class WatchListDaoTest {
 
   @Test
   public void testAddTicker01() {
-    boolean resultFlag = watchListDescDao.addTicker(15, "C@NASDAQ");
+    boolean resultFlag = watchListDescDao.addTicker(15L, "C@NASDAQ");
     Assert.assertTrue(resultFlag);
-    Assert.assertEquals("C@NASDAQ", watchListDescDao.getAllStockSymbols(15).get(2));
+    Assert.assertEquals("C@NASDAQ", watchListDescDao.getAllStockSymbols(15L).get(2));
   }
 
   @Test
   public void testGetAllStockSymbols() {
-    List<String> tickerList = watchListDescDao.getAllStockSymbols(2);
+    List<String> tickerList = watchListDescDao.getAllStockSymbols(2L);
     final int expectedDataSetsAmount = 18;
     System.out.println(tickerList);
     Assert.assertEquals(expectedDataSetsAmount, tickerList.size());
@@ -58,7 +58,7 @@ public class WatchListDaoTest {
 
   @Test
   public void test01Read() throws Exception {
-    List<IWatchListDesc> watchListDescs = watchListDescDao.getDataSetsAttachedToAcc(1);
+    List<IWatchListDesc> watchListDescs = watchListDescDao.getDataSetsAttachedToAcc(1L);
     final int stockSymbolNumAttachedToWatchedList17th = 18;
     Assert.assertEquals(stockSymbolNumAttachedToWatchedList17th,
       watchListDescs.get(1).getStockSymbolsList().size());
@@ -66,14 +66,14 @@ public class WatchListDaoTest {
 
   @Test
   public void testGetDataSetsAttachedToAcc() {
-    List<IWatchListDesc> dataSetList = watchListDescDao.getDataSetsAttachedToAcc(1);
+    List<IWatchListDesc> dataSetList = watchListDescDao.getDataSetsAttachedToAcc(1L);
     final int expectedDataSetsAmount = 9;
     Assert.assertEquals(expectedDataSetsAmount, dataSetList.size());
   }
 
   @Test
   public void testReturnBarList() {
-    IWatchListDesc dataSet = watchListDescDao.getWatchListDesc(1, 1);
+    IWatchListDesc dataSet = watchListDescDao.getWatchListDesc(1L, 1L);
     System.out.println(dataSet.getWatchListName());
     Assert.assertNotNull(dataSet);
     Assert.assertEquals("test-aapl-5minBar-preMarketdata", dataSet.getWatchListName());
@@ -81,25 +81,25 @@ public class WatchListDaoTest {
 
   @Test
   public void testDelete02() throws Exception {
-    List<IWatchListDesc> dataSetList = watchListDescDao.getDataSetsAttachedToAcc(1);
+    List<IWatchListDesc> dataSetList = watchListDescDao.getDataSetsAttachedToAcc(1L);
     final int expectedDataSetsAmount = 9;
     System.out.println(" again ");
-    dataSetList.forEach(p -> System.out.println(p.getWatchListId()));
+    dataSetList.forEach(p -> System.out.println(p.getId()));
     Assert.assertEquals(expectedDataSetsAmount, dataSetList.size());
     boolean deleteResultFlag = watchListDescDao.deleteWatchListDesc(dataSetList.get(0));
     //		Assert.assertTrue(deleteResultFlag);
     System.out.println("after deletion ");
-    dataSetList = watchListDescDao.getDataSetsAttachedToAcc(1);
+    dataSetList = watchListDescDao.getDataSetsAttachedToAcc(1L);
     final int expectedDataSetsAmountAfterDeletion = 8;
-    dataSetList.forEach(p -> System.out.println(p.getWatchListId()));
+    dataSetList.forEach(p -> System.out.println(p.getId()));
     Assert.assertEquals(expectedDataSetsAmountAfterDeletion, dataSetList.size());
   }
 
   @Test
   public void testCreateDataSet() throws Exception {
-    IWatchListDesc dataSet = watchListDescDao.getWatchListDesc(1, 1);
-    List<IWatchListDesc> dataSetList = watchListDescDao.getDataSetsAttachedToAcc(1);
-    dataSetList.forEach(p -> System.out.print(p.getWatchListId() + " ; "));
+    IWatchListDesc dataSet = watchListDescDao.getWatchListDesc(1L, 1L);
+    List<IWatchListDesc> dataSetList = watchListDescDao.getDataSetsAttachedToAcc(1L);
+    dataSetList.forEach(p -> System.out.print(p.getId() + " ; "));
     int expectedDataSetsAmountAfterDeletion = 9;
     Assert.assertEquals(expectedDataSetsAmountAfterDeletion, dataSetList.size());
     Assert.assertNotNull(dataSet);
@@ -110,10 +110,10 @@ public class WatchListDaoTest {
 
   @Test
   public void testUpdateDesc() throws Exception {
-    IWatchListDesc dataSet = watchListDescDao.getWatchListDesc(1, 1);
+    IWatchListDesc dataSet = watchListDescDao.getWatchListDesc(1L, 1L);
     dataSet.setWatchListName("test update");
     watchListDescDao.updateWatchListDesc(dataSet);
-    final String dataSetNameDirect = watchListDescDao.getWatchListDesc(1, 1).getWatchListName();
+    final String dataSetNameDirect = watchListDescDao.getWatchListDesc(1L, 1L).getWatchListName();
     Assert.assertEquals("test update", dataSetNameDirect);
   }
 }

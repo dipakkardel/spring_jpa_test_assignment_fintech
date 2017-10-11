@@ -2,22 +2,17 @@ package com.gjj.igden.dao.daoimpl;
 
 import com.gjj.igden.dao.BarRowMapper;
 import com.gjj.igden.dao.MarketDataRowMapper;
-import com.gjj.igden.dao.daoUtil.DaoException;
+import com.gjj.igden.dao.daoUtil.DAOException;
 import com.gjj.igden.dao.BarDao;
 import com.gjj.igden.model.Bar;
-import com.gjj.igden.model.MarketData;
-import com.google.common.collect.Sets;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
-import org.springframework.jdbc.core.namedparam.SqlParameterSource;
-import org.springframework.jdbc.core.namedparam.SqlParameterSourceUtils;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.sql.DataSource;
 import java.text.ParseException;
 import java.util.*;
-import java.util.stream.Collectors;
 
 @SuppressWarnings("SameParameterValue")
 @Repository("barDao")
@@ -51,15 +46,15 @@ public class BarDaoImpl implements BarDao {
   }
 
   @Transactional
-  public boolean createBar(Bar bar) throws DaoException {
+  public boolean createBar(Bar bar) throws DAOException {
     Map<String, Object> parameters = new HashMap<>();
-    parameters.put("mdId", bar.getMdId());
+    parameters.put("mdId", bar.getId());
     parameters.put("instId", bar.getInstId().toString());
     parameters.put("ticker", bar.getTicket());
     try {
       parameters.put("dateTime", bar.getDateTimeMySQLFormat());
     } catch (ParseException e) {
-      throw new DaoException.ExceptionBuilder().setException(e).build();
+      throw new DAOException(e.getMessage());
     }
     parameters.put("open", bar.getOpen());
     parameters.put("high", bar.getHigh());
@@ -77,7 +72,7 @@ public class BarDaoImpl implements BarDao {
   @Transactional
   public boolean updateBar(Bar bar) {
     Map<String, Object> parameters = new HashMap<>();
-    parameters.put("md_id", bar.getMdId());
+    parameters.put("md_id", bar.getId());
     parameters.put("dataSetId", bar.getDataSetId());
     parameters.put("instId", bar.getInstId().toString());
     parameters.put("logInfo", bar.getLogInfo());
@@ -97,7 +92,7 @@ public class BarDaoImpl implements BarDao {
 
   @Transactional
   public boolean deleteBar(Bar bar) {
-    return deleteBar(bar.getMdId(), bar.getInstId().toString());
+    return deleteBar(bar.getId(), bar.getInstId().toString());
   }
 
   public List<String> searchTickersByChars(String tickerNamePart) {

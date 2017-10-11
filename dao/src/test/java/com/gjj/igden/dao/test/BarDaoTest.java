@@ -64,7 +64,7 @@ public class BarDaoTest {
     Bar bar = barDaoImpl.getSingleBar(1,  "AAPL@NASDAQ");
     System.out.println(bar);
     Assert.assertNotNull(bar);
-    bar.setMdId((long) 111);
+    bar.setId((long) 111);
     System.out.println(bar);
     Assert.assertTrue(barDaoImpl.createBar(bar));
     List<Bar> barList = barDaoImpl.getBarList( "AAPL@NASDAQ");
@@ -72,7 +72,7 @@ public class BarDaoTest {
       .filter(p -> Objects.equals(p.getHigh(), 296.25))
       .collect(Collectors.toList());
     List<Bar> newBar_id = barList.stream()
-      .filter(p -> Objects.equals(p.getMdId(), 111L))
+      .filter(p -> Objects.equals(p.getId(), 111L))
       .collect(Collectors.toList());
     System.out.println(newBar);
     Assert.assertEquals(3, newBar.size());
@@ -84,7 +84,7 @@ public class BarDaoTest {
     Bar bar = barDaoImpl.getSingleBar(1,  "AAPL@NASDAQ");
     System.out.println(bar);
     Assert.assertNotNull(bar);
-    bar.setMdId(111L);
+    bar.setId(111L);
     System.out.println(bar);
     Assert.assertTrue(barDaoImpl.createBar(bar));
     List<Bar> barList = barDaoImpl.getBarList( "AAPL@NASDAQ");
