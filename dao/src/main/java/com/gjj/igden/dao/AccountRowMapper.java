@@ -13,7 +13,7 @@ public class AccountRowMapper implements RowMapper<Account> {
     account.setAccountName(resultSet.getString("account_name"));
     account.setEmail(resultSet.getString("email"));
     account.setAdditionalInfo(resultSet.getString("additional_info"));
-    account.setCreationDate(resultSet.getString("creation_date"));
+    account.setCreationDate(resultSet.getDate("creation_date"));
     return account;
   }
 }

@@ -89,12 +89,13 @@ public List<String> getStockSymbolsList() {
 
   @ManyToOne(cascade=CascadeType.ALL)
   @JoinColumn(name="account_id")
+  @Column(name="account_id")
   public Account getAccount() {
     return account;
   }
 
-  public void setAccount(Account accountId) {
-    this.account = accountId;
+  public void setAccount(Account account) {
+    this.account = account;
   }
 
   public String getWatchListName() {
@@ -134,8 +135,8 @@ public List<String> getStockSymbolsList() {
   public WatchListDesc() {
   }
 
-  public WatchListDesc(Account accountId) {
-    this.account = accountId;
+  public WatchListDesc(Account account) {
+    this.account = account;
   }
 
   public WatchListDesc(Long watchListId, Account accountId, String watchListName,

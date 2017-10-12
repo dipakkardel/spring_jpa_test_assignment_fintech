@@ -9,7 +9,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 @Entity
-@Table(name = "account")
+@Table(name = "user")
 public class AppUser implements UserDetails {
 
     private Long id;

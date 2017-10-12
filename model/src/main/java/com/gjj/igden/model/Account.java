@@ -18,7 +18,7 @@ public class Account implements UserDetails, EntityId {
     private String additionalInfo;
     private String password;
     private List<IWatchListDesc> descriptions;
-    private String creationDate;
+    private Date creationDate;
     private boolean enabled;
     private Avatar avatar;
 
@@ -34,7 +34,7 @@ public class Account implements UserDetails, EntityId {
 
 
 	public Account(String accountName, String email, String additionalInfo, String password,
-                   List<IWatchListDesc> descriptions, String creationDate) {
+                   List<IWatchListDesc> descriptions, Date creationDate) {
         this.accountName = accountName;
          this.email = email;
         this.additionalInfo = additionalInfo;
@@ -45,7 +45,7 @@ public class Account implements UserDetails, EntityId {
 
     public Account(long id, String accountName, String email,
                    String additionalInfo, String password,
-                   List<IWatchListDesc> dataSets, String creationDate) {
+                   List<IWatchListDesc> dataSets, Date creationDate) {
         this.id = id;
         this.accountName = accountName;
         this.email = email;
@@ -63,7 +63,7 @@ public class Account implements UserDetails, EntityId {
     }
 
     public Account(long id, String accountName, String email, String additionalInfo,
-                   String creationDate) {
+    		Date creationDate) {
         this.id = id;
         this.accountName = accountName;
         this.email = email;
@@ -91,7 +91,7 @@ public class Account implements UserDetails, EntityId {
 	}
 
     public Account(int accountId, String accountName, String email, String additionalInfo) {
-        this(accountId, accountName, email, additionalInfo, (String) null);
+        this(accountId, accountName, email, additionalInfo, (Date) null);
     }
 
     public String getPassword() {
@@ -103,11 +103,11 @@ public class Account implements UserDetails, EntityId {
     }
 
     @Column(name = "creation_date")
-    public String getCreationDate() {
+    public Date getCreationDate() {
         return creationDate;
     }
 
-    public void setCreationDate(String creationDate) {
+    public void setCreationDate(Date creationDate) {
         this.creationDate = creationDate;
     }
 

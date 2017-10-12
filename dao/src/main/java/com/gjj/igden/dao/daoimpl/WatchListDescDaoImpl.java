@@ -36,7 +36,7 @@ public class WatchListDescDaoImpl extends AbstractDAO<IWatchListDesc> {
 	}
 
 	public List<IWatchListDesc> getDataSetsAttachedToAcc(Long id) {
-		return em.createQuery("FROM WatchListDesc WHERE account_id = "+id).getResultList();
+		return em.createQuery("FROM WatchListDesc WHERE account_fk_id = "+id).getResultList();
 	}
 
 

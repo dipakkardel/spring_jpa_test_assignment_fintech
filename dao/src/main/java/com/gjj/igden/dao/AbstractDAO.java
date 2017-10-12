@@ -22,7 +22,7 @@ public abstract class AbstractDAO<E extends EntityId> {
 
     @PersistenceContext
     protected EntityManager em;
-
+    
     public abstract E read(E obj);
 
     public abstract List<E> readAll();
@@ -47,9 +47,11 @@ public abstract class AbstractDAO<E extends EntityId> {
         em.persist(obj);
     }
 
+    @Transactional
     public void delete(E obj) throws DAOException {
     	System.out.println("AbstractDAO.delete()");
-		try {
+    	
+    	try {
 			em.remove(obj);
 		} catch (Exception e) {
 			e.printStackTrace();

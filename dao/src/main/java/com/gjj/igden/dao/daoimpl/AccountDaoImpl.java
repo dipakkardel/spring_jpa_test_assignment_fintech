@@ -5,7 +5,6 @@ import com.gjj.igden.dao.daoUtil.DAOException;
 import com.gjj.igden.model.Account;
 import org.apache.commons.io.IOUtils;
 import org.springframework.stereotype.Repository;
-import javax.persistence.Query;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Root;
@@ -19,7 +18,6 @@ import java.util.List;
 @Transactional
 public class AccountDaoImpl extends AbstractDAO<Account> {
 
-	@Override
     public void create(Account account) throws DAOException {
         super.create(account);
         /*insertAvatar(account, getDefaultAvatar());*/
@@ -27,8 +25,6 @@ public class AccountDaoImpl extends AbstractDAO<Account> {
 
     @Override
     public Account read(Account account) {
-    	System.out.println("read()::::::::::::::::::::::;;"+account);
-    	System.out.println("single result="+(Account) em.createQuery("from Account where id = "+account.getId()).getSingleResult());
         return (Account) em.createQuery("from Account where account_id = "+account.getId()).getSingleResult();
     }
 
@@ -45,23 +41,19 @@ public class AccountDaoImpl extends AbstractDAO<Account> {
         cq.select(root);
         return cq;
     }
-
-
-    public byte[] getDefaultAvatar() throws DAOException {
-        try (InputStream is = this.getClass().getClassLoader().getResourceAsStream("default.jpg")) {
-            return IOUtils.toByteArray(is);
-        } catch (IOException e) {
-            throw new DAOException(e.getMessage(), e);
-        }
-    }
     
     public void delete(Account account) throws DAOException {
-    	System.out.println("delete()::::::::::::::::::"+account);
+    	System.out.println("AccountDaoImpl.delete()");
+    	account = read(account);
+    	account.setAvatar(null);
+    	account.setDataSets(null);
+    	super.delete(account);
+    	/*
     	if(null != account) {
-    		em.createNativeQuery("delete from Account where account_id=1");
+    		em.createQuery("DELETE from Account where id="+account.getId()).executeUpdate();
     	} else {
     		throw new DAOException("account not found!");
-    	}
+    	}*/
     		
     }
 

@@ -7,33 +7,32 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
+import com.gjj.igden.utils.EntityId;
+
 @Entity
 @Table(name = "account_avatar")
-public class Avatar {
+public class Avatar implements EntityId {
 
-	private long id;
+	private Long id;
 	private byte[] image;
 
 	public Avatar() {
 		super();
 	}
 
-	public Avatar(long id, byte[] image) {
+	public Avatar(byte[] image) {
 		super();
-		this.id = id;
 		this.image = image;
 	}
 
+	@Override
 	@Id
 	@GeneratedValue(strategy=GenerationType.AUTO)
 	@Column(name="avatar_id")
-	public long getId() {
+	public Long getId() {
 		return id;
 	}
-
-	public void setId(long id) {
-		this.id = id;
-	}
+	
 
 	@Column(name="image")
 	public byte[] getImage() {
@@ -42,6 +41,12 @@ public class Avatar {
 
 	public void setImage(byte[] image) {
 		this.image = image;
+	}
+
+	@Override
+	public void setId(Long id) {
+		this.id=id;
+		
 	}
 
 }

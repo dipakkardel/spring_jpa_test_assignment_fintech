@@ -54,7 +54,7 @@
       <th>Action</th>
     </tr>
     <div>
-      <a type="button" class="btn btn-success" href="/add-account">Add New Account</a>
+      <a type="button" class="btn btn-success" href="/webapp/add-account">Add New Account</a>
     </div>
 
     <c:forEach var="currAccount" items="${ACCOUNT_LIST}">

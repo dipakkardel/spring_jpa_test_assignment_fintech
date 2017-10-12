@@ -68,12 +68,14 @@ public class AccountController {
 
   @RequestMapping(value = "/add-account", method = RequestMethod.POST)
   public String createAccountPost(Account account, @RequestParam(value = "username1", required = false) String username1) {
-    service.createAccount(account);
-    return "redirect:/list-accounts";
+    System.out.println("AccountController.createAccountPost()="+account);
+	  service.createAccount(account);
+    return "redirect:/admin/list-accounts";
   }
 
   @RequestMapping(value = "/delete-account", method = RequestMethod.GET)
   public String deleteAccount(@RequestParam Long id) {
+	  System.out.println("AccountController.deleteAccount()");
 	  boolean status = false;
 	  try {
 		  status = service.delete(id);
@@ -106,9 +108,7 @@ public class AccountController {
   }
 
   @PostMapping("/uploadImage") //new annotation since 4.3 todo make this new annotation everywhere
-  public String setNewImage(@RequestParam("image") MultipartFile imageFile,
-                            RedirectAttributes redirectAttributes,
-                            Account account) {
+  public String setNewImage(@RequestParam("image") MultipartFile imageFile, RedirectAttributes redirectAttributes, Account account) {
     if (imageFile.isEmpty()) {
       redirectAttributes.addFlashAttribute("message", "Please select a file to upload");
       return "redirect:uploadStatus";

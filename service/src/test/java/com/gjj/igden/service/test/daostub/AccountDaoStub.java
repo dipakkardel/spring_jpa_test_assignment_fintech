@@ -11,6 +11,7 @@ import org.springframework.stereotype.Component;
 import javax.sql.DataSource;
 import java.io.InputStream;
 import java.util.Collections;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -27,11 +28,11 @@ public class AccountDaoStub implements AccountDao {
           "additionalInfo_test1",
           "password_test1", Stream.of(new WatchListDesc(), new WatchListDesc(),
         new WatchListDesc(), new WatchListDesc()).collect(Collectors.toList()),
-          "creationDate_test1"),
+          new Date()),
         2, new Account(2, "accountName_test2", "eMail_test2",
           "additionalInfo_test2",
           "password_test2", Stream.of(new WatchListDesc()).collect(Collectors.toList()),
-          "creationDate_test2")));
+          new Date())));
   }
 
   public void setDataSource(DataSource dataSource) {

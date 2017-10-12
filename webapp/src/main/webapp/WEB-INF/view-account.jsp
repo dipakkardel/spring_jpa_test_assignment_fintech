@@ -8,8 +8,7 @@
   <strong>Additional Info</strong>: <c:out value="${account.getAdditionalInfo()}"/><br>
   <img src="${pageContext.servletContext.contextPath}/getImage?accId=${account.getId()}" height="111px" width="111px"/>
 
-  <form:form modelAttribute="account" action="uploadImage" method="post"
-             enctype="multipart/form-data">
+  <form:form modelAttribute="account" action="uploadImage" method="post" enctype="multipart/form-data">
     <input type="file" name="image"/><br/><br/>
     <input type="submit"/>
     <input type="hidden" name="id" value=<c:out value="${account.getId()}"/>>

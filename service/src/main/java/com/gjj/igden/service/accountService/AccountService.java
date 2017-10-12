@@ -3,14 +3,18 @@ package com.gjj.igden.service.accountService;
 import com.gjj.igden.dao.WatchListDescDao;
 import com.gjj.igden.dao.daoUtil.DAOException;
 import com.gjj.igden.dao.daoimpl.AccountDaoImpl;
+import com.gjj.igden.dao.daoimpl.AvatarDaoImpl;
 import com.gjj.igden.dao.daoimpl.WatchListDescDaoImpl;
 import com.gjj.igden.model.Account;
+import com.gjj.igden.model.Avatar;
 import com.gjj.igden.model.IWatchListDesc;
+import com.gjj.igden.service.passwordencoder.AppPasswordEncoder;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.io.InputStream;
+import java.util.Date;
 import java.util.List;
 
 @Service
@@ -20,6 +24,8 @@ public class AccountService {
   
   @Autowired
   private WatchListDescDaoImpl watchListDescDao;
+  
+  @Autowired AvatarDaoImpl avatarDaoImpl;
 
   public List<Account> getAccountList() {
 	  return accountDaoImpl.readAll();
@@ -27,8 +33,14 @@ public class AccountService {
 
   public boolean createAccount(Account account) {
 	  try {
+		  account.setCreationDate(new Date());
+		  /*Avatar avatar = new Avatar();
+		  avatar.setImage(avatarDaoImpl.getDefaultAvatar());*/
+		  account.setAvatar(null);
+		  account.setEnabled(true);
+		  account.setPassword(AppPasswordEncoder.generatePassword(account.getPassword(), account.getAccountName()));
 		  accountDaoImpl.create(account);
-			return true;
+		  return true;
 		} catch (DAOException e) {
 			throw new RuntimeException("Account not created", e.getCause());
 		}
@@ -59,8 +71,8 @@ public class AccountService {
   }
 
   public boolean delete(Long id) throws DAOException {
-		Account account = new Account();
-		account.setId(id);
+	  System.out.println("AccountService.delete()");
+		Account account = getAccount(id);
 		accountDaoImpl.delete(account);
 		return true;
   }

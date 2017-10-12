@@ -15,8 +15,7 @@
   <div class="container">
 
     <form method="post" modelAttribute="account" action="edit-account" >
-    <input type="hidden" name="${_csrf.parameterName}"
-         value="${_csrf.token}"/>
+    <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
       <fieldset class="form-group">
         <input type="hidden" class="form-control" name="id" value="${account.id}"
                     required="required"/>
@@ -40,7 +39,7 @@
         <errors path="additionalInfo" cssClass="text-warning"/>
       </fieldset>
       <button class="btn btn-success">Submit</button>
-      <button class="btn btn-cancel" formaction="admin/list-accounts" >Cancel</button>
+      <button class="btn btn-cancel" formmethod="get" formaction="admin/list-accounts" >Cancel</button>
     </form>
   </div>
 
