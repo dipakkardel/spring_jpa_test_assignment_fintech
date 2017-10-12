@@ -5,10 +5,8 @@
     <title>JQuery-validation demo | Bootstrap</title>
     <link rel="stylesheet"
           href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css"/>
-    <script type="text/javascript"
-            src="https://ajax.aspnetcdn.com/ajax/jQuery/jquery-3.1.1.min.js"></script>
-    <script type="text/javascript"
-            src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.16.0/jquery.validate.min.js"></script>
+    <script type="text/javascript" src="https://ajax.aspnetcdn.com/ajax/jQuery/jquery-3.1.1.min.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.16.0/jquery.validate.min.js"></script>
 </head>
 
 <body>
@@ -20,8 +18,7 @@
                     <h4>This demo shows how to integrate JQuery-validation and the Bootstrap
                         framework.</h4>
                     <ul>
-                        <li><a href="https://getbootstrap.com/" class="alert-link">Bootstrap home
-                            project</a>.
+                        <li><a href="https://getbootstrap.com/" class="alert-link">Bootstrap home project</a>
                         </li>
                     </ul>
                 </div>

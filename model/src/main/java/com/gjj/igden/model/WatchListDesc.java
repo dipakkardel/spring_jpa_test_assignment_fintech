@@ -29,6 +29,8 @@ public class WatchListDesc implements IWatchListDesc, Serializable, EntityId {
 	@Column(name = "data_set_id")
 	private Long id; // data_set_id
 	
+	@ManyToOne
+	@JoinColumn(name="account_fk_id")
 	private Account account; // account_fk
 	
 	@Column(name = "data_set_name")
@@ -87,9 +89,7 @@ public List<String> getStockSymbolsList() {
     this.id = watchListId;
   }
 
-  @ManyToOne(cascade=CascadeType.ALL)
-  @JoinColumn(name="account_id")
-  @Column(name="account_id")
+
   public Account getAccount() {
     return account;
   }

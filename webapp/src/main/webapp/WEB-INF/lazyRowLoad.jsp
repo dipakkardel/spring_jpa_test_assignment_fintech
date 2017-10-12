@@ -20,29 +20,26 @@
       </h3>
     </div>
     <div class="panel-body">
-      <form:form modelAttribute="theWatchListDesc" action="lazyRowAdd.web" class="form-horizontal"
-                 method="post"
+      <form modelAttribute="theWatchListDesc" action="lazyRowAdd.web" class="form-horizontal" method="post"
                  id="lazyList">
-        <input type="hidden" name="id" value="${theWatchListDesc.getAccountId()}"/>
+		<input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
+        <input type="text" name="acc_id" value="${theWatchListDesc.account.getId()}"/>
         <div class="form-group">
-          <form:label path="watchListName" class="col-sm-4 control-label"
-                      for="watchListName">watchListName</form:label>
+          <label path="watchListName" class="col-sm-4 control-label" for="watchListName">watchListName</label>
           <div class="col-sm-5">
-            <input class="form-control" name="username1" id="username1"/>
+            <input class="form-control" name="watchListName" id="watchListName" value="watchListName"/>
           </div>
         </div>
         <div class="form-group">
-          <form:label path="watchListDetails" class="col-sm-4 control-label"
-                      for="watchListDetails">watchListDetails</form:label>
+          <label path="watchListDetails" class="col-sm-4 control-label" for="watchListDetails">watchListDetails</label>
           <div class="col-sm-5">
-            <input class="form-control" name="email1" id="email1"/>
+            <input class="form-control" name="watchListDetails" id="watchListDetails" value="watchListDetails" />
           </div>
         </div>
         <div class="form-group">
-          <form:label path="marketDataFrequency" class="col-sm-4 control-label"
-                      for="marketDataFrequency">marketDataFrequency</form:label>
+          <label path="marketDataFrequency" class="col-sm-4 control-label" for="marketDataFrequency">marketDataFrequency</label>
           <div class="col-sm-5">
-            <input class="form-control"/>
+            <input class="form-control" name="marketDataFrequency" id="marketDataFrequency" value="1" type="number" />
           </div>
         </div>
 
@@ -65,7 +62,7 @@
         <fieldset>
           <button>Save User Details!</button>
         </fieldset>
-      </form:form>
+      </form>
     </div>
   </div>
 
