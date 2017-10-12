@@ -14,28 +14,34 @@
 
   <div class="container">
 
-    <form:form method="post" modelAttribute="account">
-      <form:hidden path="id"/>
+    <form method="post" modelAttribute="account" action="edit-account" >
+    <input type="hidden" name="${_csrf.parameterName}"
+         value="${_csrf.token}"/>
       <fieldset class="form-group">
-        <form:label path="accountName">Account Name</form:label>
-        <form:input path="accountName" type="text" class="form-control"
+        <input type="hidden" class="form-control" name="id" value="${account.id}"
                     required="required"/>
-        <form:errors path="accountName" cssClass="text-warning"/>
       </fieldset>
       <fieldset class="form-group">
-        <form:label path="email">email</form:label>
-        <form:input path="email" type="text" class="form-control"
+        <label path="accountName">Account Name</label>
+        <input type="text" class="form-control" name="accountName" value="${account.accountName}"
                     required="required"/>
-        <form:errors path="email" cssClass="text-warning"/>
+        <errors path="accountName" cssClass="text-warning"/>
       </fieldset>
       <fieldset class="form-group">
-        <form:label path="additionalInfo">additionalInfo</form:label>
-        <form:input path="additionalInfo" type="text" class="form-control"
+        <label path="email">email</label>
+        <input path="email" type="text" class="form-control" name="email" value="${account.email}"
                     required="required"/>
-        <form:errors path="additionalInfo" cssClass="text-warning"/>
+        <errors path="email" cssClass="text-warning"/>
+      </fieldset>
+      <fieldset class="form-group">
+        <label path="additionalInfo">additionalInfo</label>
+        <input path="additionalInfo" type="text" class="form-control" name="additionalInfo" value="${account.additionalInfo}"
+                    required="required"/>
+        <errors path="additionalInfo" cssClass="text-warning"/>
       </fieldset>
       <button class="btn btn-success">Submit</button>
-    </form:form>
+      <button class="btn btn-cancel" formaction="admin/list-accounts" >Cancel</button>
+    </form>
   </div>
 
 

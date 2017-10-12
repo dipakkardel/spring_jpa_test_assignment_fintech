@@ -47,8 +47,13 @@ public abstract class AbstractDAO<E extends EntityId> {
         em.persist(obj);
     }
 
-    public void delete(E obj) {
-        em.remove(obj);
+    public void delete(E obj) throws DAOException {
+    	System.out.println("AbstractDAO.delete()");
+		try {
+			em.remove(obj);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
     }
 
 //  Additional

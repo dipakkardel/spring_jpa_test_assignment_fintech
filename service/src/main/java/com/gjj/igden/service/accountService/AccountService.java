@@ -1,12 +1,12 @@
 package com.gjj.igden.service.accountService;
 
-import com.gjj.igden.dao.AccountDao;
 import com.gjj.igden.dao.WatchListDescDao;
 import com.gjj.igden.dao.daoUtil.DAOException;
 import com.gjj.igden.dao.daoimpl.AccountDaoImpl;
+import com.gjj.igden.dao.daoimpl.WatchListDescDaoImpl;
 import com.gjj.igden.model.Account;
 import com.gjj.igden.model.IWatchListDesc;
-import com.gjj.igden.model.WatchListDesc;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -17,6 +17,9 @@ import java.util.List;
 public class AccountService {
   @Autowired
   private AccountDaoImpl accountDaoImpl;
+  
+  @Autowired
+  private WatchListDescDaoImpl watchListDescDao;
 
   public List<Account> getAccountList() {
 	  return accountDaoImpl.readAll();
@@ -32,21 +35,33 @@ public class AccountService {
   }
 
   public boolean updateAccount(Account account) {
-	  accountDaoImpl.update(account);
+	  Account ac = getAccount(account.getId());
+	  if(null != ac) {
+		  ac.setAccountName(account.getAccountName());
+		  ac.setAdditionalInfo(account.getAdditionalInfo());
+		  ac.setEmail(account.getEmail());
+	  }
+	  accountDaoImpl.update(ac);
 		return true;
+  }
+  
+  public Account getAccount(Long accId) {
+	  return accountDaoImpl.read(new Account(accId));
   }
 
   public Account retrieveAccount(Long accId) {
-	  Account user = new Account();
-		user.setId(new Long(accId));
-		accountDaoImpl.read(user);
-		return user;
+	  Account account = new Account();
+	  account = accountDaoImpl.read(new Account(accId));
+	  List<IWatchListDesc> dataSets = watchListDescDao.getDataSetsAttachedToAcc(accId);
+	  account.setDataSets(dataSets);
+	  
+	  return account;
   }
 
-  public boolean delete(int id) {
-		Account user = new Account();
-		user.setId(new Long(id));
-		accountDaoImpl.delete(user);
+  public boolean delete(Long id) throws DAOException {
+		Account account = new Account();
+		account.setId(id);
+		accountDaoImpl.delete(account);
 		return true;
   }
 

@@ -34,13 +34,14 @@ public class AccountController {
 
   @RequestMapping(value = "/edit-account", method = RequestMethod.POST)
   public String putEditedAccountToDb(Account account, RedirectAttributes redirectAttributes) {
-    boolean editStatus = service.updateAccount(account);
+    System.out.println("AccountController.putEditedAccountToDb()"+account);
+	boolean editStatus = service.updateAccount(account);
     if (editStatus) {
       redirectAttributes.addAttribute("success", "true");
     } else {
       System.err.println("editing failed");
     }
-    return "redirect:/list-accounts";
+    return "redirect:/admin/list-accounts";
   }
 
   @RequestMapping(value = "/add-account", method = RequestMethod.GET)
@@ -67,15 +68,20 @@ public class AccountController {
 
   @RequestMapping(value = "/add-account", method = RequestMethod.POST)
   public String createAccountPost(Account account, @RequestParam(value = "username1", required = false) String username1) {
-    System.out.println(account.getAdditionalInfo());
     service.createAccount(account);
     return "redirect:/list-accounts";
   }
 
   @RequestMapping(value = "/delete-account", method = RequestMethod.GET)
-  public String deleteAccount(@RequestParam int id) {
-    if (service.delete(id)) {
-      return "redirect:/list-accounts";
+  public String deleteAccount(@RequestParam Long id) {
+	  boolean status = false;
+	  try {
+		  status = service.delete(id);
+	  } catch (Exception e) {
+		  status = false;
+	  }
+    if (status) {
+      return "redirect:/admin/list-accounts";
     } else {
       return "errorPage";
     }
@@ -83,8 +89,10 @@ public class AccountController {
 
   @RequestMapping(value = "/edit-account", method = RequestMethod.GET)
   public String getAccountToEditAndPopulateForm(ModelMap model, @RequestParam Long id) {
+	System.out.println("AccountController.getAccountToEditAndPopulateForm()"+id);
     Account account = service.retrieveAccount(id);
-    service.updateAccount(account);
+    System.out.println(account);
+    /*service.updateAccount(account);*/
     model.addAttribute("account", account);
     return "edit-account";
   }

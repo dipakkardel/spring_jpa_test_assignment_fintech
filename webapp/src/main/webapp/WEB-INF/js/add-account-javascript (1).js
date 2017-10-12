@@ -1,5 +1,4 @@
 
-<script type="text/javascript">
 /*
     $.validator.setDefaults({
         submitHandler: function () {
@@ -84,4 +83,3 @@ $(document).ready(function () {
         }
     });
 });
-</script>

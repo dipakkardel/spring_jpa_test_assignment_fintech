@@ -1,5 +1,6 @@
 package com.gjj.igden.controller;
 
+import com.gjj.igden.dao.daoUtil.DAOException;
 import com.gjj.igden.model.Users;
 import com.gjj.igden.model.WatchListDesc;
 import com.gjj.igden.service.accountService.AccountService;
@@ -38,7 +39,7 @@ public class WatchListDescController {
 
   @PostMapping(value = "/lazyRowAdd.web")
   public String lazyRowAdd(@ModelAttribute("theWatchListDesc") WatchListDesc theWatchListDesc,
-                           @ModelAttribute("username1") String watchlistName, @RequestParam("id") Long accId) {
+                           @ModelAttribute("username1") String watchlistName, @RequestParam("id") Long accId) throws DAOException {
     System.out.println(accId);
     theWatchListDesc.setAccount(accountService.retrieveAccount(accId));
     theWatchListDesc.setWatchListName(watchlistName);

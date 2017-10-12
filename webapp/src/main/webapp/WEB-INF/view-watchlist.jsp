@@ -8,11 +8,17 @@
 <%@ include file="common/header.jspf" %>
 <%@ include file="common/navigation.jspf" %>
 <div class="container">
-<table>
-
+<table width="100%" >
+	<thead>
+		<tr>
+			<th>Stock</th>
+			<th>Action</th>
+		</tr>
+	</thead>
+	
   <c:forEach var="theStock" items="${stockSymbolsList}">
-    <tr>
-      <td>Stock : ${theStock}  </td>
+    <tr >
+      <td>${theStock}  </td>
       <td> <a type="button" class="btn btn-primary"
               href="<c:url value="/view-data?watchListId=${watchListId}&stockSymbol=${theStock}"/>">View</a></td>
     </tr>

@@ -27,7 +27,9 @@ public class AccountDaoImpl extends AbstractDAO<Account> {
 
     @Override
     public Account read(Account account) {
-            return em.find(Account.class, account.getId());
+    	System.out.println("read()::::::::::::::::::::::;;"+account);
+    	System.out.println("single result="+(Account) em.createQuery("from Account where id = "+account.getId()).getSingleResult());
+        return (Account) em.createQuery("from Account where account_id = "+account.getId()).getSingleResult();
     }
 
     @Override
@@ -53,13 +55,18 @@ public class AccountDaoImpl extends AbstractDAO<Account> {
         }
     }
     
-    public void delete(Account id) {
-       super.delete(id);
+    public void delete(Account account) throws DAOException {
+    	System.out.println("delete()::::::::::::::::::"+account);
+    	if(null != account) {
+    		em.createNativeQuery("delete from Account where account_id=1");
+    	} else {
+    		throw new DAOException("account not found!");
+    	}
+    		
     }
 
-    
-    public void update(Account acc) {
-    	super.update(acc);
+    public void update(Account account) {
+    	super.update(account);
     }
 
 	public boolean setImage(long accId, InputStream is) {

@@ -4,8 +4,6 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import com.gjj.igden.utils.EntityId;
-import com.mysql.cj.jdbc.Blob;
-
 import javax.persistence.*;
 import java.util.*;
 
@@ -162,24 +160,16 @@ public class Account implements UserDetails, EntityId {
                 Objects.equals(((Account) obj).accountName, this.accountName);
     }
 
-    @Override
-    public String toString() {
-        StringBuilder builder = new StringBuilder();
-        builder.append(" [id=");
-        builder.append(id);
-        builder.append(", accountName= ");
-        builder.append(accountName);
-        builder.append(", email= ");
-        builder.append(getEmail());
-        builder.append(", additionalInfo= ");
-        builder.append(additionalInfo);
-        builder.append(", data_containers Sets names= ");
-        builder.append(descriptions);
-        builder.append("]\n");
-        return builder.toString();
-    }
+    
 
-    public void setEnabled(boolean enabled) {
+    @Override
+	public String toString() {
+		return "Account [id=" + id + ", accountName=" + accountName + ", email=" + email + ", additionalInfo="
+				+ additionalInfo + ", password=" + password + ", descriptions=" + descriptions + ", creationDate="
+				+ creationDate + ", enabled=" + enabled + ", avatar=" + avatar + ", roles=" + roles + "]";
+	}
+
+	public void setEnabled(boolean enabled) {
         this.enabled = enabled;
     }
 
@@ -243,7 +233,7 @@ public class Account implements UserDetails, EntityId {
         this.email = email;
     }
 
-    @OneToOne(fetch = FetchType.EAGER)
+    @OneToOne(fetch = FetchType.EAGER, orphanRemoval=true)
     @JoinColumn(name="avatar_id")
 	public Avatar getAvatar() {
 		return avatar;
@@ -257,5 +247,6 @@ public class Account implements UserDetails, EntityId {
 	public List<IWatchListDesc> getDescriptions() {
 		return descriptions;
 	}
+	
 
 }

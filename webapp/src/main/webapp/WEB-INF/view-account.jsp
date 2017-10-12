@@ -22,15 +22,21 @@
   </div>
   <hr size="4" color="gray"/>
 
-  <table>
-
-    <c:forEach var="theWatchList" items="${watchLists}">
+  <table width="100%;">
+	<thead>
+    		<tr>
+    			<th>Data Set Name</th>
+    			<th>Data Set Id</th>
+    			<th>Action</th>
+    		</tr>
+    	</thead>
+    <c:forEach var="theWatch" items="${watchLists}">
       <tr>
-        <td>dataSet Name: ${theWatchList.getWatchListName()}  </td>
-        <td>dataSet id: ${theWatchList.getWatchListId()}   </td>
+        <td>${theWatch.getWatchListName()}  </td>
+        <td>${theWatch.getWatchListId()}   </td>
 
         <td><a type="button" class="btn btn-primary"
-               href="<c:url value="/view-watchlist?id=${theWatchList.watchListId}"/>">View</a></td>
+               href="<c:url value="/view-watchlist?id=${theWatch.watchListId}"/>">View</a></td>
       </tr>
 
     </c:forEach>

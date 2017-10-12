@@ -28,16 +28,18 @@ public class WatchListDesc implements IWatchListDesc, Serializable, EntityId {
 	@GeneratedValue(strategy = GenerationType.AUTO)
 	@Column(name = "data_set_id")
 	private Long id; // data_set_id
-	//@Column(name = "account_id")
-	@ManyToOne(cascade=CascadeType.ALL)
-	@JoinColumn(name="account_id")
+	
 	private Account account; // account_fk
+	
 	@Column(name = "data_set_name")
 	private String watchListName; // dataset name
+	
 	@Column(name = "data_set_desc")
 	private String watchListDetails; // data set desc
+	
 	@Column(name = "market_data_frequency")
 	private int marketDataFrequency; // market data frequency
+	
 	@Column(name="data_provider")
 	private String dataProviders; // data providers
 	
@@ -85,6 +87,8 @@ public List<String> getStockSymbolsList() {
     this.id = watchListId;
   }
 
+  @ManyToOne(cascade=CascadeType.ALL)
+  @JoinColumn(name="account_id")
   public Account getAccount() {
     return account;
   }

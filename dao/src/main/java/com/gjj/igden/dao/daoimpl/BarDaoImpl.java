@@ -48,7 +48,7 @@ public class BarDaoImpl extends AbstractDAO<Bar> {
 		return true;
 	}
 	
-	public boolean deleteBar(Bar bar) {
+	public boolean deleteBar(Bar bar) throws DAOException {
 		super.delete(bar);
 		return true;
 	}

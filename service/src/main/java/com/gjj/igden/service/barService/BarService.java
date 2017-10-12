@@ -35,7 +35,7 @@ public class BarService {
     }
   }
 
-  public boolean deleteBar(Bar bar) {
+  public boolean deleteBar(Bar bar) throws DAOException {
     return barDao.deleteBar(bar);
   }
 

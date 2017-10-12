@@ -2,6 +2,8 @@ package com.gjj.igden.model;
 
 
 
+import java.io.Serializable;
+
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -14,29 +16,24 @@ import javax.persistence.Transient;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.gjj.igden.model.IWatchListDesc;
-import com.gjj.igden.utils.EntityId;
 import com.gjj.igden.utils.Exchange;
 import com.google.common.base.Objects;
 
-/**
- * Instrument identifier
- */
-// table name = wl_tickers
+
 @Entity
 @Table(name = "wl_tickers")
-public class InstId {
-	@Id
-	@Column(name = "instId")
+public class InstId implements Serializable {
+	
 	private String instId;
 	private final static String SEPARATOR = "@";
 	private String symbol; // create composite primary key symbol + exch_id
-	@Transient private String exchId;
+	private String exchId;
 	// new parameter WachListDesc
-	@Autowired
-	@ManyToOne(cascade=CascadeType.ALL,targetEntity=WatchListDesc.class)
-	@JoinColumn(name="watchlist_id_fk")
 	private IWatchListDesc iWatchListDesc;
-	private @Transient Exchange exchange;
+	private Exchange exchange;
+	
+	public InstId() {
+	}
 
 	public InstId(String str) {
 		validateCorrectString(str);
@@ -67,21 +64,31 @@ public class InstId {
 	public void setInstId(String instId) {
 		this.instId = instId;
 	}
-
 	
+	
+	
+	/*@Id
+	@Column(name = "instId")
 	public String getInstId() {
 		return symbol + SEPARATOR + getExchange().getExchId();
+	}*/
+	
+	@Id
+	@Column(name = "instId")
+	public String getInstId() {
+		return instId;
 	}
-	
-	
+
 	public void setExchange(Exchange exchange) {
 		this.exchange = exchange;
 	}
+	
 
 	public void setExchId(String exchId) {
 		this.exchId = exchId;
 	}
 
+	@Transient
 	public String getExchId() {
 		return exchId;
 	}
@@ -94,6 +101,9 @@ public class InstId {
 		return symbol;
 	}
 	
+	@Autowired
+	@ManyToOne(cascade=CascadeType.ALL,targetEntity=WatchListDesc.class)
+	@JoinColumn(name="watchlist_id_fk")
 	public IWatchListDesc getiWatchListDesc() {
 		return iWatchListDesc;
 	}
