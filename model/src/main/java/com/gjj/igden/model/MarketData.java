@@ -1,8 +1,8 @@
 package com.gjj.igden.model;
 
+import java.sql.Date;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.Date;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -19,12 +19,12 @@ public abstract class MarketData {
    */
   private static final String MYSQL_TIME_FORMAT = "yyyy-MM-dd HH:mm:ss";
   protected InstId instId;
-  protected long dateTime;
+  protected Date dateTime;
 
   protected MarketData() {
   }
 
-  public MarketData(InstId instId, long dateTime) {
+  public MarketData(InstId instId, Date dateTime) {
     this.instId = instId;
     this.dateTime = dateTime;
   }
@@ -53,11 +53,11 @@ public abstract class MarketData {
 	  }
 
   @Column(name="date")
-  public long getDateTime() {
+  public Date getDateTime() {
     return dateTime;
   }
 
-  public void setDateTime(long dateTime) {
+  public void setDateTime(Date dateTime) {
     this.dateTime = dateTime;
   }
 
@@ -65,21 +65,22 @@ public abstract class MarketData {
     SimpleDateFormat stf = new SimpleDateFormat(MYSQL_TIME_FORMAT);
     // stf.setTimeZone(TimeZone.getTimeZone("America/New_York"));
     stf.setTimeZone(instId.getExchange().getTimeZone());
-    Date date = stf.parse(dateTime);
+    java.util.Date date = stf.parse(dateTime);
     // System.err.println(date);
-    this.dateTime = date.getTime() / 1000;
+    this.dateTime = new java.sql.Date(date.getTime());
   }
 
   @Transient
-  public String getDateTimeMySQLFormat() throws ParseException {
-    Date dateFromEpoch = new Date(dateTime * 1000);
+  public Date getDateTimeMySQLFormat() throws ParseException {
+    /*Date dateFromEpoch = new Date(dateTime * 1000);
     SimpleDateFormat df = new SimpleDateFormat(MYSQL_TIME_FORMAT);
     df.setTimeZone(instId.getExchange().getTimeZone());
-    return df.format(dateFromEpoch);
+    return df.format(dateFromEpoch);*/
+	  return dateTime;
   }
 
   public void reset() {
     this.instId = null;
-    this.dateTime = -1;
+    this.dateTime = new Date(0);
   }
 }

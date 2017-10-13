@@ -1,6 +1,8 @@
 package com.gjj.igden.controller;
 
+import com.gjj.igden.dao.daoimpl.RoleDaoImpl;
 import com.gjj.igden.model.Account;
+import com.gjj.igden.model.Role;
 import com.gjj.igden.service.accountService.AccountService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpRequest;
@@ -18,123 +20,141 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Set;
 
 import org.apache.commons.io.IOUtils;
 
 @Controller
 public class AccountController {
-  @Autowired
-  private AccountService service;
+	@Autowired
+	private AccountService service;
 
-  @RequestMapping(value = "/admin/list-accounts", method = RequestMethod.GET)
-  public String showAccounts(ModelMap model) {
-    model.addAttribute("ACCOUNT_LIST", service.getAccountList());
-    return "list-accounts";
-  }
+	@Autowired
+	private RoleDaoImpl roleDaoImpl;
 
-  @RequestMapping(value = "/edit-account", method = RequestMethod.POST)
-  public String putEditedAccountToDb(Account account, RedirectAttributes redirectAttributes) {
-    System.out.println("AccountController.putEditedAccountToDb()"+account);
-	boolean editStatus = service.updateAccount(account);
-    if (editStatus) {
-      redirectAttributes.addAttribute("success", "true");
-    } else {
-      System.err.println("editing failed");
-    }
-    return "redirect:/admin/list-accounts";
-  }
+	@RequestMapping(value = "/admin/list-accounts", method = RequestMethod.GET)
+	public String showAccounts(ModelMap model) {
+		model.addAttribute("ACCOUNT_LIST", service.getAccountList());
+		return "list-accounts";
+	}
 
-  @RequestMapping(value = "/add-account", method = RequestMethod.GET)
-  public String createNewAccountGet(ModelMap model) {
-    model.addAttribute("account", new Account());
-    return "add-account";
-  }
+	@RequestMapping(value = "/edit-account", method = RequestMethod.POST)
+	public String putEditedAccountToDb(Account account, RedirectAttributes redirectAttributes) {
+		System.out.println("AccountController.putEditedAccountToDb()" + account);
+		boolean editStatus = service.updateAccount(account);
+		if (editStatus) {
+			redirectAttributes.addAttribute("success", "true");
+		} else {
+			System.err.println("editing failed");
+		}
+		return "redirect:/admin/list-accounts";
+	}
 
-  @RequestMapping(value = "/processAddAccount1", method = RequestMethod.POST)
-  public String createAccountPost1(@RequestParam(value = "username1", required = false) String username1) {
-    Account account = new Account();
-    account.setAccountName(username1);
-    service.createAccount(account);
-    return "redirect:/list-accounts";
-  }
+	@RequestMapping(value = "/add-account", method = RequestMethod.GET)
+	public String createNewAccountGet(ModelMap model) {
+		roleDaoImpl.readAll().forEach(System.out::println);
+		model.addAttribute("accountRoles", roleDaoImpl.readAll());
+		model.addAttribute("account", new Account());
+		return "add-account";
+	}
 
-  @RequestMapping(value = "/processAddAccount", method = RequestMethod.POST)
-  public String createAccountPost2(@RequestParam(value = "username1", required = false) String username1) {
-    Account account = new Account();
-    account.setAccountName(username1);
-    service.createAccount(account);
-    return "redirect:/list-accounts";
-  }
+	@RequestMapping(value = "/processAddAccount1", method = RequestMethod.POST)
+	public String createAccountPost1(@RequestParam(value = "username1", required = false) String username1) {
+		Account account = new Account();
+		account.setAccountName(username1);
+		service.createAccount(account);
+		return "redirect:/list-accounts";
+	}
 
-  @RequestMapping(value = "/add-account", method = RequestMethod.POST)
-  public String createAccountPost(Account account, @RequestParam(value = "username1", required = false) String username1) {
-    System.out.println("AccountController.createAccountPost()="+account);
-	  service.createAccount(account);
-    return "redirect:/admin/list-accounts";
-  }
+	@RequestMapping(value = "/processAddAccount", method = RequestMethod.POST)
+	public String createAccountPost2(@RequestParam(value = "username1", required = false) String username1) {
+		Account account = new Account();
+		account.setAccountName(username1);
+		service.createAccount(account);
+		return "redirect:/list-accounts";
+	}
 
-  @RequestMapping(value = "/delete-account", method = RequestMethod.GET)
-  public String deleteAccount(@RequestParam Long id) {
-	  System.out.println("AccountController.deleteAccount()");
-	  boolean status = false;
-	  try {
-		  status = service.delete(id);
-	  } catch (Exception e) {
-		  status = false;
-	  }
-    if (status) {
-      return "redirect:/admin/list-accounts";
-    } else {
-      return "errorPage";
-    }
-  }
+	@RequestMapping(value = "/add-account", method = RequestMethod.POST)
+	public String createAccountPost(Account account, @RequestParam(value = "role", required = false) String role) {
+		account.addRole(roleDaoImpl.read(new Role(Long.parseLong(role))));
+		service.createAccount(account);
+		return "redirect:/admin/list-accounts";
+	}
 
-  @RequestMapping(value = "/edit-account", method = RequestMethod.GET)
-  public String getAccountToEditAndPopulateForm(ModelMap model, @RequestParam Long id) {
-	System.out.println("AccountController.getAccountToEditAndPopulateForm()"+id);
-    Account account = service.retrieveAccount(id);
-    System.out.println(account);
-    /*service.updateAccount(account);*/
-    model.addAttribute("account", account);
-    return "edit-account";
-  }
+	@RequestMapping(value = "/delete-account", method = RequestMethod.GET)
+	public String deleteAccount(@RequestParam Long id) {
+		System.out.println("AccountController.deleteAccount()");
+		boolean status = false;
+		try {
+			status = service.delete(id);
+		} catch (Exception e) {
+			status = false;
+		}
+		if (status) {
+			return "redirect:/admin/list-accounts";
+		} else {
+			return "errorPage";
+		}
+	}
 
-  @RequestMapping(value = "/getImage", method = RequestMethod.GET)
-  @ResponseBody
-  public byte[] showImage(@RequestParam("accId") int itemId/*, HttpServletResponse response*/)
-    throws ServletException, IOException {
-    byte[] buffer = service.getImage(itemId);
-    return buffer;
-  }
+	@RequestMapping(value = "/edit-account", method = RequestMethod.GET)
+	public String getAccountToEditAndPopulateForm(ModelMap model, @RequestParam Long id) {
+		System.out.println("AccountController.getAccountToEditAndPopulateForm()" + id);
+		Account account = service.retrieveAccount(id);
+		System.out.println(account);
+		/* service.updateAccount(account); */
+		model.addAttribute("account", account);
+		return "edit-account";
+	}
 
-  @PostMapping("/uploadImage") //new annotation since 4.3 todo make this new annotation everywhere
-  public String setNewImage(@RequestParam("image") MultipartFile imageFile, RedirectAttributes redirectAttributes, Account account) {
-    if (imageFile.isEmpty()) {
-      redirectAttributes.addFlashAttribute("message", "Please select a file to upload");
-      return "redirect:uploadStatus";
-    }
-    try {
-      byte[] bytes = imageFile.getBytes();
-      InputStream imageConvertedToInputStream = new ByteArrayInputStream(bytes);
-      service.setImage(account.getId(), imageConvertedToInputStream);
-      redirectAttributes.addFlashAttribute("message",
-        "You successfully uploaded '" + imageFile.getOriginalFilename() + "'");
-    } catch (IOException e) {
-      e.printStackTrace();
-    }
-    return "redirect:/uploadStatus";
-  }
+	@RequestMapping(value = "/getImage", method = RequestMethod.GET)
+	@ResponseBody
+	public byte[] showImage(@RequestParam("accId") int itemId/* , HttpServletResponse response */)
+			throws ServletException, IOException {
+		byte[] buffer = service.getImage(itemId);
+		return buffer;
+	}
 
-  @GetMapping("/uploadStatus")
-  public String uploadStatus() {
-    return "uploadStatus";
-  }
+	@PostMapping("/uploadImage") // new annotation since 4.3 todo make this new annotation everywhere
+	public String setNewImage(@RequestParam("image") MultipartFile imageFile, RedirectAttributes redirectAttributes,
+			Account account) {
+		if (imageFile.isEmpty()) {
+			redirectAttributes.addFlashAttribute("message", "Please select a file to upload");
+			return "redirect:uploadStatus";
+		}
+		try {
+			byte[] bytes = imageFile.getBytes();
+			InputStream imageConvertedToInputStream = new ByteArrayInputStream(bytes);
+			service.setImage(account.getId(), imageConvertedToInputStream);
+			redirectAttributes.addFlashAttribute("message",
+					"You successfully uploaded '" + imageFile.getOriginalFilename() + "'");
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		return "redirect:/uploadStatus";
+	}
 
-  @RequestMapping(value = "/view-account", method = RequestMethod.GET)
-  public String viewAccount(ModelMap model, @RequestParam Long id) {
-    Account account = service.retrieveAccount(id);
-    model.addAttribute("watchLists", account.getAttachedWatchedLists());
-    model.addAttribute("account", account);
-    return "view-account";
-  }
+	@GetMapping("/uploadStatus")
+	public String uploadStatus() {
+		return "uploadStatus";
+	}
+
+	@RequestMapping(value = "/view-account", method = RequestMethod.GET)
+	public String viewAccount(ModelMap model, @RequestParam Long id) {
+		Account account = service.retrieveAccount(id);
+		model.addAttribute("watchLists", account.getAttachedWatchedLists());
+		model.addAttribute("account", account);
+		return "view-account";
+	}
+
+	@RequestMapping(value = "/home")
+	public String home() {
+		return "/other-jsp/home";
+	}
+
+	@RequestMapping(value = "/location")
+	public String location() {
+		return "/other-jsp/location";
+	}
+
 }

@@ -17,8 +17,10 @@ public class BarDataController {
   private BarService service;
 
   @RequestMapping(value = "/view-data", method = RequestMethod.GET)
-  public String viewAccount(ModelMap model, @RequestParam String stockSymbol) {
+  public String viewBarData(ModelMap model, @RequestParam String stockSymbol) {
+	System.out.println("BarDataController.viewAccount():::::"+stockSymbol);
     List<Bar> barList = service.getBarList(stockSymbol);
+    barList.forEach(System.out::println);
     model.addAttribute("barData", barList);
     return "view-data";
   }

@@ -96,7 +96,7 @@ public class MainController {
 		return model;
 
   }
-
+  
   private boolean isRememberMeAuthenticated() {
     Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
     return authentication != null && RememberMeAuthenticationToken.
@@ -119,4 +119,5 @@ public class MainController {
     }
     return targetUrl;
   }
+  
 }

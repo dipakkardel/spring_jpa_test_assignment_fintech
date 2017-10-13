@@ -5,6 +5,7 @@ import com.google.common.base.Objects;
 import org.javatuples.Ennead;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import java.sql.Date;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
@@ -86,7 +87,7 @@ public class Bar extends MarketData implements InterfaceOHLCData, EntityId {
         this.logInfo = bar.logInfo;
     }
 
-    public Bar(InstId instId, long dateTime, Long mdId, IWatchListDesc dataSetId, int barSize, double open,
+    public Bar(InstId instId, Date dateTime, Long mdId, IWatchListDesc dataSetId, int barSize, double open,
                double high, double low, double close, long volume, String logInfo) {
         super(instId, dateTime);
         this.id = mdId;
@@ -103,7 +104,7 @@ public class Bar extends MarketData implements InterfaceOHLCData, EntityId {
     public Bar(
             InstId instId,
             int barSize,
-            long dateTime,
+            Date dateTime,
             double open,
             double high,
             double low,
@@ -114,7 +115,7 @@ public class Bar extends MarketData implements InterfaceOHLCData, EntityId {
     public Bar(
             InstId instId,
             int barSize,
-            long dateTime,
+            Date dateTime,
             double open,
             double high,
             double low,
@@ -127,7 +128,7 @@ public class Bar extends MarketData implements InterfaceOHLCData, EntityId {
     public Bar(
             InstId instId,
             int barSize,
-            long dateTime,
+            Date dateTime,
             double open,
             double high,
             double low,
@@ -235,7 +236,7 @@ public class Bar extends MarketData implements InterfaceOHLCData, EntityId {
     }
 
     public String toString() {
-        Instant fromUnixTimestamp = Instant.ofEpochSecond(dateTime);
+        Instant fromUnixTimestamp = Instant.ofEpochSecond(dateTime.getTime());
         LocalDateTime time = LocalDateTime.ofInstant(fromUnixTimestamp,
                 ZoneId.of("UTC-4"));
         return "\n{ " +
@@ -316,7 +317,7 @@ public class Bar extends MarketData implements InterfaceOHLCData, EntityId {
             Double, Double, Long> ennead) {
         this.instId = ennead.getValue0();
         this.id = ennead.getValue1();
-        this.dateTime = ennead.getValue2();
+        this.dateTime = new Date(ennead.getValue2());
         this.barSize = ennead.getValue3();
         this.high = ennead.getValue4();
         this.low = ennead.getValue5();

@@ -8,7 +8,7 @@
 <%@ include file="common/header.jspf" %>
 <%@ include file="common/navigation.jspf" %>
 <div class="container">
-<table width="100%" >
+<table class="table table-striped" >
 	<thead>
 		<tr>
 			<th>Stock</th>

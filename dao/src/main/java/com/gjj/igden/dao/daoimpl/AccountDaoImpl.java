@@ -3,29 +3,31 @@ package com.gjj.igden.dao.daoimpl;
 import com.gjj.igden.dao.AbstractDAO;
 import com.gjj.igden.dao.daoUtil.DAOException;
 import com.gjj.igden.model.Account;
-import org.apache.commons.io.IOUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Root;
 import javax.transaction.Transactional;
 
-import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
 
 @Repository
 @Transactional
 public class AccountDaoImpl extends AbstractDAO<Account> {
+	
+	@Autowired
+	WatchListDescDaoImpl watchListDescDaoImpl;
 
     public void create(Account account) throws DAOException {
+    	System.out.println("create account::::::"+account);
         super.create(account);
-        /*insertAvatar(account, getDefaultAvatar());*/
     }
 
     @Override
     public Account read(Account account) {
-        return (Account) em.createQuery("from Account where account_id = "+account.getId()).getSingleResult();
+        return (Account) em.createQuery("from Account where id = "+account.getId()).getSingleResult();
     }
 
     @Override
@@ -46,7 +48,9 @@ public class AccountDaoImpl extends AbstractDAO<Account> {
     	System.out.println("AccountDaoImpl.delete()");
     	account = read(account);
     	account.setAvatar(null);
-    	account.setDataSets(null);
+    	account.setRoles(null);
+    	//watchListDescDaoImpl.removeAll(account);
+    	//update(account);
     	super.delete(account);
     	/*
     	if(null != account) {

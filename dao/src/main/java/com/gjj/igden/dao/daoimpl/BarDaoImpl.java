@@ -26,11 +26,11 @@ public class BarDaoImpl extends AbstractDAO<Bar> {
 	}
 	
 	public Bar getSingleBar(long id, String instId) {
-		return (Bar) em.createQuery("FROM Bar WHERE id = "+id+" AND instId_fk = "+instId+" ").getSingleResult();
+		return (Bar) em.createQuery("FROM Bar WHERE id = "+id+" AND instId_fk = '"+instId+"' ").getSingleResult();
 	}
   
 	public List<Bar> getBarList(String instId) {
-		return em.createQuery("FROM Bar WHERE instId_fk = "+instId+" ").getResultList();
+		return em.createQuery("FROM Bar WHERE instId_fk = '"+instId+"' ").getResultList();
 	}
   
 	public boolean createBar(Bar bar) throws DAOException {
@@ -44,7 +44,7 @@ public class BarDaoImpl extends AbstractDAO<Bar> {
 	}
 	
 	public boolean deleteBar(long mdId, String instId) {
-		em.createQuery("DELETE FROM Bar WHERE id = "+mdId+" AND instId_fk = "+instId+" ").executeUpdate();
+		em.createQuery("DELETE FROM Bar WHERE id = "+mdId+" AND instId_fk = '"+instId+"' ").executeUpdate();
 		return true;
 	}
 	

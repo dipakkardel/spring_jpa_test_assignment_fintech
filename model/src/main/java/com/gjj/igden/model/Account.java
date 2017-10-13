@@ -21,6 +21,8 @@ public class Account implements UserDetails, EntityId {
     private Date creationDate;
     private boolean enabled;
     private Avatar avatar;
+    @Transient
+    private String role;
 
     private Set<Role> roles = new HashSet<>();
 
@@ -148,6 +150,9 @@ public class Account implements UserDetails, EntityId {
         this.descriptions = dataSets;
     }
 
+    public void removeAllDescriptions() {
+    	this.descriptions.removeAll(descriptions);
+    }
 
     @Override
     public int hashCode() {
@@ -189,7 +194,14 @@ public class Account implements UserDetails, EntityId {
     public void setRoles(Set<Role> roles) {
         this.roles = roles;
     }
+    
+    public void addRole(Role role) {
+    	roles.add(role);
+    }
 
+    public void removeAllRole() {
+    	this.getRoles().removeAll(roles);
+    }
 
     @Override
     @Transient
@@ -246,6 +258,14 @@ public class Account implements UserDetails, EntityId {
 	@Transient
 	public List<IWatchListDesc> getDescriptions() {
 		return descriptions;
+	}
+
+	public String getRole() {
+		return role;
+	}
+
+	public void setRole(String role) {
+		this.role = role;
 	}
 	
 

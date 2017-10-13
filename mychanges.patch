@@ -1,0 +1,1375 @@
+diff --git a/controller/src/main/java/com/gjj/igden/controller/AccountController.java b/controller/src/main/java/com/gjj/igden/controller/AccountController.java
+index cf6d201..7a6f28e 100644
+--- a/controller/src/main/java/com/gjj/igden/controller/AccountController.java
++++ b/controller/src/main/java/com/gjj/igden/controller/AccountController.java
+@@ -1,6 +1,8 @@
+ package com.gjj.igden.controller;
+ 
++import com.gjj.igden.dao.daoimpl.RoleDaoImpl;
+ import com.gjj.igden.model.Account;
++import com.gjj.igden.model.Role;
+ import com.gjj.igden.service.accountService.AccountService;
+ import org.springframework.beans.factory.annotation.Autowired;
+ import org.springframework.http.HttpRequest;
+@@ -18,123 +20,141 @@ import javax.servlet.http.HttpServletResponse;
+ import java.io.ByteArrayInputStream;
+ import java.io.IOException;
+ import java.io.InputStream;
++import java.util.Set;
+ 
+ import org.apache.commons.io.IOUtils;
+ 
+ @Controller
+ public class AccountController {
+-  @Autowired
+-  private AccountService service;
+-
+-  @RequestMapping(value = "/admin/list-accounts", method = RequestMethod.GET)
+-  public String showAccounts(ModelMap model) {
+-    model.addAttribute("ACCOUNT_LIST", service.getAccountList());
+-    return "list-accounts";
+-  }
+-
+-  @RequestMapping(value = "/edit-account", method = RequestMethod.POST)
+-  public String putEditedAccountToDb(Account account, RedirectAttributes redirectAttributes) {
+-    System.out.println("AccountController.putEditedAccountToDb()"+account);
+-	boolean editStatus = service.updateAccount(account);
+-    if (editStatus) {
+-      redirectAttributes.addAttribute("success", "true");
+-    } else {
+-      System.err.println("editing failed");
+-    }
+-    return "redirect:/admin/list-accounts";
+-  }
+-
+-  @RequestMapping(value = "/add-account", method = RequestMethod.GET)
+-  public String createNewAccountGet(ModelMap model) {
+-    model.addAttribute("account", new Account());
+-    return "add-account";
+-  }
+-
+-  @RequestMapping(value = "/processAddAccount1", method = RequestMethod.POST)
+-  public String createAccountPost1(@RequestParam(value = "username1", required = false) String username1) {
+-    Account account = new Account();
+-    account.setAccountName(username1);
+-    service.createAccount(account);
+-    return "redirect:/list-accounts";
+-  }
+-
+-  @RequestMapping(value = "/processAddAccount", method = RequestMethod.POST)
+-  public String createAccountPost2(@RequestParam(value = "username1", required = false) String username1) {
+-    Account account = new Account();
+-    account.setAccountName(username1);
+-    service.createAccount(account);
+-    return "redirect:/list-accounts";
+-  }
+-
+-  @RequestMapping(value = "/add-account", method = RequestMethod.POST)
+-  public String createAccountPost(Account account, @RequestParam(value = "username1", required = false) String username1) {
+-    System.out.println("AccountController.createAccountPost()="+account);
+-	  service.createAccount(account);
+-    return "redirect:/admin/list-accounts";
+-  }
+-
+-  @RequestMapping(value = "/delete-account", method = RequestMethod.GET)
+-  public String deleteAccount(@RequestParam Long id) {
+-	  System.out.println("AccountController.deleteAccount()");
+-	  boolean status = false;
+-	  try {
+-		  status = service.delete(id);
+-	  } catch (Exception e) {
+-		  status = false;
+-	  }
+-    if (status) {
+-      return "redirect:/admin/list-accounts";
+-    } else {
+-      return "errorPage";
+-    }
+-  }
+-
+-  @RequestMapping(value = "/edit-account", method = RequestMethod.GET)
+-  public String getAccountToEditAndPopulateForm(ModelMap model, @RequestParam Long id) {
+-	System.out.println("AccountController.getAccountToEditAndPopulateForm()"+id);
+-    Account account = service.retrieveAccount(id);
+-    System.out.println(account);
+-    /*service.updateAccount(account);*/
+-    model.addAttribute("account", account);
+-    return "edit-account";
+-  }
+-
+-  @RequestMapping(value = "/getImage", method = RequestMethod.GET)
+-  @ResponseBody
+-  public byte[] showImage(@RequestParam("accId") int itemId/*, HttpServletResponse response*/)
+-    throws ServletException, IOException {
+-    byte[] buffer = service.getImage(itemId);
+-    return buffer;
+-  }
+-
+-  @PostMapping("/uploadImage") //new annotation since 4.3 todo make this new annotation everywhere
+-  public String setNewImage(@RequestParam("image") MultipartFile imageFile, RedirectAttributes redirectAttributes, Account account) {
+-    if (imageFile.isEmpty()) {
+-      redirectAttributes.addFlashAttribute("message", "Please select a file to upload");
+-      return "redirect:uploadStatus";
+-    }
+-    try {
+-      byte[] bytes = imageFile.getBytes();
+-      InputStream imageConvertedToInputStream = new ByteArrayInputStream(bytes);
+-      service.setImage(account.getId(), imageConvertedToInputStream);
+-      redirectAttributes.addFlashAttribute("message",
+-        "You successfully uploaded '" + imageFile.getOriginalFilename() + "'");
+-    } catch (IOException e) {
+-      e.printStackTrace();
+-    }
+-    return "redirect:/uploadStatus";
+-  }
+-
+-  @GetMapping("/uploadStatus")
+-  public String uploadStatus() {
+-    return "uploadStatus";
+-  }
+-
+-  @RequestMapping(value = "/view-account", method = RequestMethod.GET)
+-  public String viewAccount(ModelMap model, @RequestParam Long id) {
+-    Account account = service.retrieveAccount(id);
+-    model.addAttribute("watchLists", account.getAttachedWatchedLists());
+-    model.addAttribute("account", account);
+-    return "view-account";
+-  }
++	@Autowired
++	private AccountService service;
++
++	@Autowired
++	private RoleDaoImpl roleDaoImpl;
++
++	@RequestMapping(value = "/admin/list-accounts", method = RequestMethod.GET)
++	public String showAccounts(ModelMap model) {
++		model.addAttribute("ACCOUNT_LIST", service.getAccountList());
++		return "list-accounts";
++	}
++
++	@RequestMapping(value = "/edit-account", method = RequestMethod.POST)
++	public String putEditedAccountToDb(Account account, RedirectAttributes redirectAttributes) {
++		System.out.println("AccountController.putEditedAccountToDb()" + account);
++		boolean editStatus = service.updateAccount(account);
++		if (editStatus) {
++			redirectAttributes.addAttribute("success", "true");
++		} else {
++			System.err.println("editing failed");
++		}
++		return "redirect:/admin/list-accounts";
++	}
++
++	@RequestMapping(value = "/add-account", method = RequestMethod.GET)
++	public String createNewAccountGet(ModelMap model) {
++		roleDaoImpl.readAll().forEach(System.out::println);
++		model.addAttribute("accountRoles", roleDaoImpl.readAll());
++		model.addAttribute("account", new Account());
++		return "add-account";
++	}
++
++	@RequestMapping(value = "/processAddAccount1", method = RequestMethod.POST)
++	public String createAccountPost1(@RequestParam(value = "username1", required = false) String username1) {
++		Account account = new Account();
++		account.setAccountName(username1);
++		service.createAccount(account);
++		return "redirect:/list-accounts";
++	}
++
++	@RequestMapping(value = "/processAddAccount", method = RequestMethod.POST)
++	public String createAccountPost2(@RequestParam(value = "username1", required = false) String username1) {
++		Account account = new Account();
++		account.setAccountName(username1);
++		service.createAccount(account);
++		return "redirect:/list-accounts";
++	}
++
++	@RequestMapping(value = "/add-account", method = RequestMethod.POST)
++	public String createAccountPost(Account account, @RequestParam(value = "role", required = false) String role) {
++		account.addRole(roleDaoImpl.read(new Role(Long.parseLong(role))));
++		service.createAccount(account);
++		return "redirect:/admin/list-accounts";
++	}
++
++	@RequestMapping(value = "/delete-account", method = RequestMethod.GET)
++	public String deleteAccount(@RequestParam Long id) {
++		System.out.println("AccountController.deleteAccount()");
++		boolean status = false;
++		try {
++			status = service.delete(id);
++		} catch (Exception e) {
++			status = false;
++		}
++		if (status) {
++			return "redirect:/admin/list-accounts";
++		} else {
++			return "errorPage";
++		}
++	}
++
++	@RequestMapping(value = "/edit-account", method = RequestMethod.GET)
++	public String getAccountToEditAndPopulateForm(ModelMap model, @RequestParam Long id) {
++		System.out.println("AccountController.getAccountToEditAndPopulateForm()" + id);
++		Account account = service.retrieveAccount(id);
++		System.out.println(account);
++		/* service.updateAccount(account); */
++		model.addAttribute("account", account);
++		return "edit-account";
++	}
++
++	@RequestMapping(value = "/getImage", method = RequestMethod.GET)
++	@ResponseBody
++	public byte[] showImage(@RequestParam("accId") int itemId/* , HttpServletResponse response */)
++			throws ServletException, IOException {
++		byte[] buffer = service.getImage(itemId);
++		return buffer;
++	}
++
++	@PostMapping("/uploadImage") // new annotation since 4.3 todo make this new annotation everywhere
++	public String setNewImage(@RequestParam("image") MultipartFile imageFile, RedirectAttributes redirectAttributes,
++			Account account) {
++		if (imageFile.isEmpty()) {
++			redirectAttributes.addFlashAttribute("message", "Please select a file to upload");
++			return "redirect:uploadStatus";
++		}
++		try {
++			byte[] bytes = imageFile.getBytes();
++			InputStream imageConvertedToInputStream = new ByteArrayInputStream(bytes);
++			service.setImage(account.getId(), imageConvertedToInputStream);
++			redirectAttributes.addFlashAttribute("message",
++					"You successfully uploaded '" + imageFile.getOriginalFilename() + "'");
++		} catch (IOException e) {
++			e.printStackTrace();
++		}
++		return "redirect:/uploadStatus";
++	}
++
++	@GetMapping("/uploadStatus")
++	public String uploadStatus() {
++		return "uploadStatus";
++	}
++
++	@RequestMapping(value = "/view-account", method = RequestMethod.GET)
++	public String viewAccount(ModelMap model, @RequestParam Long id) {
++		Account account = service.retrieveAccount(id);
++		model.addAttribute("watchLists", account.getAttachedWatchedLists());
++		model.addAttribute("account", account);
++		return "view-account";
++	}
++
++	@RequestMapping(value = "/home")
++	public String home() {
++		return "/other-jsp/home";
++	}
++
++	@RequestMapping(value = "/location")
++	public String location() {
++		return "/other-jsp/location";
++	}
++
+ }
+diff --git a/controller/src/main/java/com/gjj/igden/controller/BarDataController.java b/controller/src/main/java/com/gjj/igden/controller/BarDataController.java
+index c33a64f..d2e9617 100644
+--- a/controller/src/main/java/com/gjj/igden/controller/BarDataController.java
++++ b/controller/src/main/java/com/gjj/igden/controller/BarDataController.java
+@@ -17,8 +17,10 @@ public class BarDataController {
+   private BarService service;
+ 
+   @RequestMapping(value = "/view-data", method = RequestMethod.GET)
+-  public String viewAccount(ModelMap model, @RequestParam String stockSymbol) {
++  public String viewBarData(ModelMap model, @RequestParam String stockSymbol) {
++	System.out.println("BarDataController.viewAccount():::::"+stockSymbol);
+     List<Bar> barList = service.getBarList(stockSymbol);
++    barList.forEach(System.out::println);
+     model.addAttribute("barData", barList);
+     return "view-data";
+   }
+diff --git a/controller/src/main/java/com/gjj/igden/controller/MainController.java b/controller/src/main/java/com/gjj/igden/controller/MainController.java
+index b4aedff..23f2db5 100644
+--- a/controller/src/main/java/com/gjj/igden/controller/MainController.java
++++ b/controller/src/main/java/com/gjj/igden/controller/MainController.java
+@@ -96,7 +96,7 @@ public class MainController {
+ 		return model;
+ 
+   }
+-
++  
+   private boolean isRememberMeAuthenticated() {
+     Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+     return authentication != null && RememberMeAuthenticationToken.
+@@ -119,4 +119,5 @@ public class MainController {
+     }
+     return targetUrl;
+   }
++  
+ }
+\ No newline at end of file
+diff --git a/controller/src/main/java/com/gjj/igden/controller/WatchListDescController.java b/controller/src/main/java/com/gjj/igden/controller/WatchListDescController.java
+index 2f5f9f2..92343d8 100644
+--- a/controller/src/main/java/com/gjj/igden/controller/WatchListDescController.java
++++ b/controller/src/main/java/com/gjj/igden/controller/WatchListDescController.java
+@@ -16,11 +16,12 @@ public class WatchListDescController {
+   
+   @Autowired
+   private AccountService accountService;
+-
++  
+   @RequestMapping(value = "/view-watchlist", method = RequestMethod.GET)
+-  public String viewAccount(ModelMap model, @RequestParam Long id) {
+-    model.addAttribute("stockSymbolsList", service.getStockSymbolsList(id));
+-    model.addAttribute("watchListId", id);
++  public String viewWatchList(ModelMap model, @RequestParam Long watchListId) {
++	  System.out.println("WatchListDescController.viewAccount()::: watchListId="+watchListId);
++    model.addAttribute("stockSymbolsList", service.getStockSymbolsList(watchListId));
++    model.addAttribute("watchListId", watchListId);
+     return "view-watchlist";
+   }
+ 
+@@ -34,12 +35,24 @@ public class WatchListDescController {
+   }
+ 
+   @PostMapping(value = "/lazyRowAdd.web")
+-  public String lazyRowAdd(@ModelAttribute("theWatchListDesc") WatchListDesc theWatchListDesc,
+-                           @ModelAttribute("watchlistName") String watchlistName, @RequestParam("acc_id") Long accId) throws DAOException {
+-    System.out.println(accId);
++  public String lazyRowAdd(@ModelAttribute("theWatchListDesc") WatchListDesc theWatchListDesc, 
++		  @RequestParam("acc_id") Long accId) throws DAOException {
++    System.out.println("lazyRowAdd::::::::::::"+theWatchListDesc.getOperationParameterses());
+     theWatchListDesc.setAccount(accountService.getAccount(accId));
+-    theWatchListDesc.setWatchListName(watchlistName);
+     service.create(theWatchListDesc);
+     return "redirect:/view-account?id="+accId;
+   }
++  
++  @RequestMapping(value = "/delete-watchlist", method = RequestMethod.GET)
++  public String deleteAccount(ModelMap model, @RequestParam("watchListId") Long watchListId, 
++		  @RequestParam("accountId") Long accountId) {
++    try {
++    	System.out.println("accountId:::::::::::::::::::::::::::::::::::"+accountId);
++		service.delete(new WatchListDesc(watchListId));
++	} catch (DAOException e) {
++		e.printStackTrace();
++	}
++    return "redirect:/view-account?id="+accountId;
++  }
++  
+ }
+diff --git a/dao/src/main/java/com/gjj/igden/dao/daoimpl/AccountDaoImpl.java b/dao/src/main/java/com/gjj/igden/dao/daoimpl/AccountDaoImpl.java
+index ef85880..2af1f4d 100644
+--- a/dao/src/main/java/com/gjj/igden/dao/daoimpl/AccountDaoImpl.java
++++ b/dao/src/main/java/com/gjj/igden/dao/daoimpl/AccountDaoImpl.java
+@@ -3,29 +3,31 @@ package com.gjj.igden.dao.daoimpl;
+ import com.gjj.igden.dao.AbstractDAO;
+ import com.gjj.igden.dao.daoUtil.DAOException;
+ import com.gjj.igden.model.Account;
+-import org.apache.commons.io.IOUtils;
++import org.springframework.beans.factory.annotation.Autowired;
+ import org.springframework.stereotype.Repository;
+ import javax.persistence.criteria.CriteriaBuilder;
+ import javax.persistence.criteria.CriteriaQuery;
+ import javax.persistence.criteria.Root;
+ import javax.transaction.Transactional;
+ 
+-import java.io.IOException;
+ import java.io.InputStream;
+ import java.util.List;
+ 
+ @Repository
+ @Transactional
+ public class AccountDaoImpl extends AbstractDAO<Account> {
++	
++	@Autowired
++	WatchListDescDaoImpl watchListDescDaoImpl;
+ 
+     public void create(Account account) throws DAOException {
++    	System.out.println("create account::::::"+account);
+         super.create(account);
+-        /*insertAvatar(account, getDefaultAvatar());*/
+     }
+ 
+     @Override
+     public Account read(Account account) {
+-        return (Account) em.createQuery("from Account where account_id = "+account.getId()).getSingleResult();
++        return (Account) em.createQuery("from Account where id = "+account.getId()).getSingleResult();
+     }
+ 
+     @Override
+@@ -46,7 +48,9 @@ public class AccountDaoImpl extends AbstractDAO<Account> {
+     	System.out.println("AccountDaoImpl.delete()");
+     	account = read(account);
+     	account.setAvatar(null);
+-    	account.setDataSets(null);
++    	account.setRoles(null);
++    	//watchListDescDaoImpl.removeAll(account);
++    	//update(account);
+     	super.delete(account);
+     	/*
+     	if(null != account) {
+diff --git a/dao/src/main/java/com/gjj/igden/dao/daoimpl/BarDaoImpl.java b/dao/src/main/java/com/gjj/igden/dao/daoimpl/BarDaoImpl.java
+index 77aec31..deda301 100644
+--- a/dao/src/main/java/com/gjj/igden/dao/daoimpl/BarDaoImpl.java
++++ b/dao/src/main/java/com/gjj/igden/dao/daoimpl/BarDaoImpl.java
+@@ -26,11 +26,11 @@ public class BarDaoImpl extends AbstractDAO<Bar> {
+ 	}
+ 	
+ 	public Bar getSingleBar(long id, String instId) {
+-		return (Bar) em.createQuery("FROM Bar WHERE id = "+id+" AND instId_fk = "+instId+" ").getSingleResult();
++		return (Bar) em.createQuery("FROM Bar WHERE id = "+id+" AND instId_fk = '"+instId+"' ").getSingleResult();
+ 	}
+   
+ 	public List<Bar> getBarList(String instId) {
+-		return em.createQuery("FROM Bar WHERE instId_fk = "+instId+" ").getResultList();
++		return em.createQuery("FROM Bar WHERE instId_fk = '"+instId+"' ").getResultList();
+ 	}
+   
+ 	public boolean createBar(Bar bar) throws DAOException {
+@@ -44,7 +44,7 @@ public class BarDaoImpl extends AbstractDAO<Bar> {
+ 	}
+ 	
+ 	public boolean deleteBar(long mdId, String instId) {
+-		em.createQuery("DELETE FROM Bar WHERE id = "+mdId+" AND instId_fk = "+instId+" ").executeUpdate();
++		em.createQuery("DELETE FROM Bar WHERE id = "+mdId+" AND instId_fk = '"+instId+"' ").executeUpdate();
+ 		return true;
+ 	}
+ 	
+diff --git a/dao/src/main/java/com/gjj/igden/dao/daoimpl/WatchListDescDaoImpl.java b/dao/src/main/java/com/gjj/igden/dao/daoimpl/WatchListDescDaoImpl.java
+index cd4a7cc..90b5dc2 100644
+--- a/dao/src/main/java/com/gjj/igden/dao/daoimpl/WatchListDescDaoImpl.java
++++ b/dao/src/main/java/com/gjj/igden/dao/daoimpl/WatchListDescDaoImpl.java
+@@ -26,181 +26,51 @@ import java.util.Map;
+ @Repository
+ public class WatchListDescDaoImpl extends AbstractDAO<IWatchListDesc> {
+ 
+-	public List<String> getAllStockSymbols(Long id) {
+-		//return em.createQuery("instId FROM wl_tickers WHERE watchlist_id_fk = :id\"")
+-		IWatchListDesc iWatchListDesc = (IWatchListDesc) em.createQuery("FROM WatchListDesc where id="+id).getSingleResult();
+-		em.createQuery("select instId FROM InstId where watchlist_id_fk=1").getResultList().forEach(System.out::println);
+-		List<String> list = em.createQuery("select instId FROM InstId where watchlist_id_fk="+iWatchListDesc.getId()).getResultList();
+-		
+-		return list;
++	@Override
++	public IWatchListDesc read(IWatchListDesc obj) {
++		return (WatchListDesc) em.createQuery("FROM WatchListDesc where id="+obj.getId()).getSingleResult();
+ 	}
+ 
++	@Override
++	public List<IWatchListDesc> readAll() {
++		return em.createQuery("FROM WatchListDesc").getResultList();
++	}
++	
++	public boolean createWatchListDesc(IWatchListDesc watchListDesc) throws DAOException {
++		super.create(watchListDesc);
++		return false;
++	}
++	
+ 	public List<IWatchListDesc> getDataSetsAttachedToAcc(Long id) {
+ 		return em.createQuery("FROM WatchListDesc WHERE account_fk_id = "+id).getResultList();
+ 	}
+ 
+-
+-	public IWatchListDesc getWatchListDesc(Long dsId, Long accId) {
+-		return (IWatchListDesc) em.createQuery("FROM WatchListDesc WHERE id = "+dsId+" AND Account = "+new Account(accId)).getSingleResult();
+-	}
+-
+-	public boolean addTicker(Long watchlistId, String tickerName) {
+-		em.createQuery("INSERT INTO InstId (iWatchListDesc, instId) VALUES (:watchlistId, :tickerNam");
+-		return false;
++	public List<String> getAllStockSymbols(Long id) {
++		IWatchListDesc iWatchListDesc = (IWatchListDesc) em.createQuery("FROM WatchListDesc where id="+id).getSingleResult();
++		em.createQuery("select instId FROM InstId where watchlist_id_fk=1").getResultList().forEach(System.out::println);
++		List<String> list = em.createQuery("select instId FROM InstId where watchlist_id_fk="+iWatchListDesc.getId()).getResultList();
++		
++		return list;
+ 	}
+-
++	
+ 	public boolean deleteWatchListDesc(Long dsId, Long accId) {
+ 		em.createQuery("delete from WatchListDesc where id="+dsId+" and account="+new Account(accId));
+ 		return true;
+ 	}
+-
++	
++	public IWatchListDesc getWatchListDesc(Long dsId, Long accId) {
++		return (IWatchListDesc) em.createQuery("FROM WatchListDesc WHERE id = "+dsId+" AND Account = "+new Account(accId)).getSingleResult();
++	}
++	
+ 	public boolean deleteWatchListDesc(IWatchListDesc watchListDesc) throws DAOException {
+-		super.delete(watchListDesc);
++		super.delete(read(watchListDesc));
+ 		return true;
+ 	}
+-
+-	public boolean createWatchListDesc(IWatchListDesc watchListDesc) throws DAOException {
+-		super.create(watchListDesc);
+-		return false;
+-	}
+-
++	
+ 	public boolean updateWatchListDesc(IWatchListDesc watchListDesc) {
+ 		super.update(watchListDesc);
+ 		return false;
+ 	}
+-
+-	@Override
+-	public IWatchListDesc read(IWatchListDesc obj) {
+-		// TODO Auto-generated method stub
+-		return null;
+-	}
+-
+-	@Override
+-	public List<IWatchListDesc> readAll() {
+-		// TODO Auto-generated method stub
+-		return null;
+-	}
+-
+-	
+-    
+ 	
+-	
+-	
+-	
+-	
+-	
+-	/*private NamedParameterJdbcTemplate namedParamJbd;
+-
+-    @Autowired
+-    public void setDataSource(DataSource dataSource) {
+-        namedParamJbd = new NamedParameterJdbcTemplate(dataSource);
+-    }
+-
+-    public void setNamedParamJbd(NamedParameterJdbcTemplate namedParamJbd) {
+-        this.namedParamJbd = namedParamJbd;
+-    }
+-
+-    public List<String> getAllStockSymbols(Long watchListDescId) {
+-        SqlParameterSource params = new MapSqlParameterSource("id", watchListDescId);
+-        String sqlQuery = "SELECT instId FROM wl_tickers WHERE watchlist_id_fk = :id";
+-        return namedParamJbd.query(sqlQuery, params, new WatchListTickersRowMapper());
+-    }
+-
+-    public List<IWatchListDesc> getDataSetsAttachedToAcc(Long accId) {
+-        SqlParameterSource params = new MapSqlParameterSource("accountId", accId);
+-        final String getDataFromDataSetTable = "SELECT * FROM data_set WHERE account_fk_id = :accountId";
+-        List<IWatchListDesc> watchListDescs = namedParamJbd.query(getDataFromDataSetTable,
+-                params, new WatchListDescRowMapper());
+-        watchListDescs.forEach(p -> p.setStockSymbolsList(getAllStockSymbols(p.getId())));
+-        return watchListDescs;
+-    }
+-
+-    public IWatchListDesc getWatchListDesc(Long dsId, Long accId) {
+-        Map<String, Object> parameters = new HashMap<>();
+-        parameters.put("accId", accId);
+-        parameters.put("dsId", dsId);
+-        final String sqlQuery =
+-                "SELECT * FROM data_set WHERE account_fk_id = :accId AND data_set_id = :dsId";
+-        return namedParamJbd.queryForObject(sqlQuery, parameters, new WatchListDescRowMapper());
+-    }
+-
+-    @Override
+-    public boolean addTicker(Long watchlistId, String tickerName) {
+-        Map<String, Object> paramMap = new HashMap<>();
+-        paramMap.put("watchlistId", watchlistId);
+-        paramMap.put("tickerName", tickerName);
+-        final String INSERT_QUERY =
+-                "INSERT INTO wl_tickers (`watchlist_id_fk`, `instId`) VALUES (:watchlistId, :tickerName);";
+-        return namedParamJbd.update(INSERT_QUERY, paramMap) == 1;
+-    }
+-
+-    @Transactional
+-    public boolean deleteWatchListDesc(Long dsId, Long accId) {
+-        IWatchListDesc dataSet = this.getWatchListDesc(dsId, accId);
+-        SqlParameterSource beanParams = new BeanPropertySqlParameterSource(dataSet);
+-        String sqlQuery = "	DELETE FROM data_set WHERE data_set_id = :watchListId" +
+-                " AND account_fk_id = :accountId;";
+-        return namedParamJbd.update(sqlQuery, beanParams) == 1;
+-    }
+-
+-    @Transactional
+-    public boolean deleteWatchListDesc(IWatchListDesc watchListDesc) {
+-        SqlParameterSource beanParams = new BeanPropertySqlParameterSource(watchListDesc);
+-        String sqlQuery = "	DELETE FROM data_set WHERE data_set_id = :watchListId" +
+-                " AND account_fk_id = :accountId;";
+-        return namedParamJbd.update(sqlQuery, beanParams) == 1;
+-    }
+-
+-    @Transactional
+-    public boolean createWatchListDesc(IWatchListDesc watchListDesc) {
+-        if (createWatchListDescFields(watchListDesc)) {
+-            List<String> tickers = watchListDesc.getStockSymbolsList();
+-            if (tickers != null && tickers.size() > 0) {
+-                for (String ticker : tickers) {
+-                    if (!setWatchListTickers(ticker)) {
+-                        return false;
+-                    }
+-                }
+-            }
+-            return true;
+-        } else {
+-            return false;
+-        }
+-    }
+-
+-    @Transactional
+-    public boolean createWatchListDescFields(IWatchListDesc watchListDesc) {
+-        MapSqlParameterSource parameters = new MapSqlParameterSource();
+-        parameters.addValue("accId", watchListDesc.getAccount(), Types.INTEGER);
+-        parameters.addValue("data_set_name", watchListDesc.getWatchListName());
+-        parameters.addValue("market_data_frequency", watchListDesc.getMarketDataFrequency());
+-        parameters.addValue("data_set_description", watchListDesc.getWatchListDetails());
+-        parameters.addValue("data_providers", watchListDesc.getDataProviders());
+-        String sqlQuery = " INSERT INTO data_set ( account_fk_id, data_set_name, " +
+-                "data_set_description, market_data_frequency, data_providers ) " +
+-                "VALUES ( :accId, :data_set_name, :data_set_description," +
+-                " :market_data_frequency, :data_providers);";
+-        return namedParamJbd.update(sqlQuery, parameters) == 1;
+-    }
+-
+-    @Transactional
+-    public boolean setWatchListTickers(String ticker) {
+-        MapSqlParameterSource parameters = new MapSqlParameterSource();
+-        parameters.addValue("instId", ticker);
+-        String sqlQuery = " INSERT INTO wl_tickers (instId, watchlist_id_fk)" +
+-                "VALUES ( :instId, LAST_INSERT_ID()) ;";
+-        return namedParamJbd.update(sqlQuery, parameters) == 1;
+-    }
+-
+-    @Transactional
+-    public boolean updateWatchListDesc(IWatchListDesc watchListDesc) {
+-        Map<String, Object> parameters = new HashMap<>();
+-        parameters.put("data_set_id", watchListDesc.getId());
+-        parameters.put("account_fk_id", watchListDesc.getAccount());
+-        parameters.put("data_set_name", watchListDesc.getWatchListName());
+-        String sqlQuery = "UPDATE data_set SET data_set_name = :data_set_name " +
+-                "WHERE data_set_id = :data_set_id AND account_fk_id = :account_fk_id";
+-        return namedParamJbd.update(sqlQuery, parameters) == 1;
+-    }*/
+ 
+ }
+diff --git a/model/src/main/java/com/gjj/igden/model/Account.java b/model/src/main/java/com/gjj/igden/model/Account.java
+index 776611d..6beccb0 100644
+--- a/model/src/main/java/com/gjj/igden/model/Account.java
++++ b/model/src/main/java/com/gjj/igden/model/Account.java
+@@ -21,6 +21,8 @@ public class Account implements UserDetails, EntityId {
+     private Date creationDate;
+     private boolean enabled;
+     private Avatar avatar;
++    @Transient
++    private String role;
+ 
+     private Set<Role> roles = new HashSet<>();
+ 
+@@ -148,6 +150,9 @@ public class Account implements UserDetails, EntityId {
+         this.descriptions = dataSets;
+     }
+ 
++    public void removeAllDescriptions() {
++    	this.descriptions.removeAll(descriptions);
++    }
+ 
+     @Override
+     public int hashCode() {
+@@ -189,7 +194,14 @@ public class Account implements UserDetails, EntityId {
+     public void setRoles(Set<Role> roles) {
+         this.roles = roles;
+     }
++    
++    public void addRole(Role role) {
++    	roles.add(role);
++    }
+ 
++    public void removeAllRole() {
++    	this.getRoles().removeAll(roles);
++    }
+ 
+     @Override
+     @Transient
+@@ -247,6 +259,14 @@ public class Account implements UserDetails, EntityId {
+ 	public List<IWatchListDesc> getDescriptions() {
+ 		return descriptions;
+ 	}
++
++	public String getRole() {
++		return role;
++	}
++
++	public void setRole(String role) {
++		this.role = role;
++	}
+ 	
+ 
+ }
+diff --git a/model/src/main/java/com/gjj/igden/model/Bar.java b/model/src/main/java/com/gjj/igden/model/Bar.java
+index bd52748..7b9a808 100644
+--- a/model/src/main/java/com/gjj/igden/model/Bar.java
++++ b/model/src/main/java/com/gjj/igden/model/Bar.java
+@@ -5,6 +5,7 @@ import com.google.common.base.Objects;
+ import org.javatuples.Ennead;
+ import org.springframework.beans.factory.annotation.Autowired;
+ 
++import java.sql.Date;
+ import java.time.Instant;
+ import java.time.LocalDateTime;
+ import java.time.ZoneId;
+@@ -86,7 +87,7 @@ public class Bar extends MarketData implements InterfaceOHLCData, EntityId {
+         this.logInfo = bar.logInfo;
+     }
+ 
+-    public Bar(InstId instId, long dateTime, Long mdId, IWatchListDesc dataSetId, int barSize, double open,
++    public Bar(InstId instId, Date dateTime, Long mdId, IWatchListDesc dataSetId, int barSize, double open,
+                double high, double low, double close, long volume, String logInfo) {
+         super(instId, dateTime);
+         this.id = mdId;
+@@ -103,7 +104,7 @@ public class Bar extends MarketData implements InterfaceOHLCData, EntityId {
+     public Bar(
+             InstId instId,
+             int barSize,
+-            long dateTime,
++            Date dateTime,
+             double open,
+             double high,
+             double low,
+@@ -114,7 +115,7 @@ public class Bar extends MarketData implements InterfaceOHLCData, EntityId {
+     public Bar(
+             InstId instId,
+             int barSize,
+-            long dateTime,
++            Date dateTime,
+             double open,
+             double high,
+             double low,
+@@ -127,7 +128,7 @@ public class Bar extends MarketData implements InterfaceOHLCData, EntityId {
+     public Bar(
+             InstId instId,
+             int barSize,
+-            long dateTime,
++            Date dateTime,
+             double open,
+             double high,
+             double low,
+@@ -235,7 +236,7 @@ public class Bar extends MarketData implements InterfaceOHLCData, EntityId {
+     }
+ 
+     public String toString() {
+-        Instant fromUnixTimestamp = Instant.ofEpochSecond(dateTime);
++        Instant fromUnixTimestamp = Instant.ofEpochSecond(dateTime.getTime());
+         LocalDateTime time = LocalDateTime.ofInstant(fromUnixTimestamp,
+                 ZoneId.of("UTC-4"));
+         return "\n{ " +
+@@ -316,7 +317,7 @@ public class Bar extends MarketData implements InterfaceOHLCData, EntityId {
+             Double, Double, Long> ennead) {
+         this.instId = ennead.getValue0();
+         this.id = ennead.getValue1();
+-        this.dateTime = ennead.getValue2();
++        this.dateTime = new Date(ennead.getValue2());
+         this.barSize = ennead.getValue3();
+         this.high = ennead.getValue4();
+         this.low = ennead.getValue5();
+diff --git a/model/src/main/java/com/gjj/igden/model/MarketData.java b/model/src/main/java/com/gjj/igden/model/MarketData.java
+index a8faa69..c971630 100644
+--- a/model/src/main/java/com/gjj/igden/model/MarketData.java
++++ b/model/src/main/java/com/gjj/igden/model/MarketData.java
+@@ -1,8 +1,8 @@
+ package com.gjj.igden.model;
+ 
++import java.sql.Date;
+ import java.text.ParseException;
+ import java.text.SimpleDateFormat;
+-import java.util.Date;
+ 
+ import javax.persistence.CascadeType;
+ import javax.persistence.Column;
+@@ -19,12 +19,12 @@ public abstract class MarketData {
+    */
+   private static final String MYSQL_TIME_FORMAT = "yyyy-MM-dd HH:mm:ss";
+   protected InstId instId;
+-  protected long dateTime;
++  protected Date dateTime;
+ 
+   protected MarketData() {
+   }
+ 
+-  public MarketData(InstId instId, long dateTime) {
++  public MarketData(InstId instId, Date dateTime) {
+     this.instId = instId;
+     this.dateTime = dateTime;
+   }
+@@ -53,11 +53,11 @@ public abstract class MarketData {
+ 	  }
+ 
+   @Column(name="date")
+-  public long getDateTime() {
++  public Date getDateTime() {
+     return dateTime;
+   }
+ 
+-  public void setDateTime(long dateTime) {
++  public void setDateTime(Date dateTime) {
+     this.dateTime = dateTime;
+   }
+ 
+@@ -65,21 +65,22 @@ public abstract class MarketData {
+     SimpleDateFormat stf = new SimpleDateFormat(MYSQL_TIME_FORMAT);
+     // stf.setTimeZone(TimeZone.getTimeZone("America/New_York"));
+     stf.setTimeZone(instId.getExchange().getTimeZone());
+-    Date date = stf.parse(dateTime);
++    java.util.Date date = stf.parse(dateTime);
+     // System.err.println(date);
+-    this.dateTime = date.getTime() / 1000;
++    this.dateTime = new java.sql.Date(date.getTime());
+   }
+ 
+   @Transient
+-  public String getDateTimeMySQLFormat() throws ParseException {
+-    Date dateFromEpoch = new Date(dateTime * 1000);
++  public Date getDateTimeMySQLFormat() throws ParseException {
++    /*Date dateFromEpoch = new Date(dateTime * 1000);
+     SimpleDateFormat df = new SimpleDateFormat(MYSQL_TIME_FORMAT);
+     df.setTimeZone(instId.getExchange().getTimeZone());
+-    return df.format(dateFromEpoch);
++    return df.format(dateFromEpoch);*/
++	  return dateTime;
+   }
+ 
+   public void reset() {
+     this.instId = null;
+-    this.dateTime = -1;
++    this.dateTime = new Date(0);
+   }
+ }
+diff --git a/model/src/main/java/com/gjj/igden/model/OperationParameters.java b/model/src/main/java/com/gjj/igden/model/OperationParameters.java
+index b1708e9..8264553 100644
+--- a/model/src/main/java/com/gjj/igden/model/OperationParameters.java
++++ b/model/src/main/java/com/gjj/igden/model/OperationParameters.java
+@@ -1,18 +1,59 @@
+ package com.gjj.igden.model;
+ 
+-public class OperationParameters {
+-  private String name;
++import javax.persistence.CascadeType;
++import javax.persistence.Column;
++import javax.persistence.Entity;
++import javax.persistence.GeneratedValue;
++import javax.persistence.GenerationType;
++import javax.persistence.Id;
++import javax.persistence.ManyToOne;
++import javax.persistence.Table;
+ 
+-  public String getName() {
+-    return name;
+-  }
++import com.gjj.igden.utils.EntityId;
+ 
+-  public void setName(String name) {
+-    this.name = name;
+-  }
++@Entity
++@Table(name="operational_parameters")
++public class OperationParameters implements EntityId {
++
++	@Id
++	@GeneratedValue(strategy = GenerationType.AUTO)
++	private Long id;
++
++	@Column(name = "operational_name")
++	private String name;
++
++	@ManyToOne(cascade = CascadeType.ALL)
++	WatchListDesc watchListDesc;
++
++	public String getName() {
++		return name;
++	}
++
++	public void setName(String name) {
++		this.name = name;
++	}
++
++	@Override
++	public String toString() {
++		return "OperationParameters [id=" + id + ", name=" + name + ", watchListDesc=" + watchListDesc + "]";
++	}
++
++	@Override
++	public Long getId() {
++		return id;
++	}
++
++	@Override
++	public void setId(Long id) {
++		this.id = id;
++	}
++
++	public WatchListDesc getWatchListDesc() {
++		return watchListDesc;
++	}
++
++	public void setWatchListDesc(WatchListDesc watchListDesc) {
++		this.watchListDesc = watchListDesc;
++	}
+ 
+-  @Override
+-  public String toString() {
+-    return name;
+-  }
+ }
+\ No newline at end of file
+diff --git a/model/src/main/java/com/gjj/igden/model/Role.java b/model/src/main/java/com/gjj/igden/model/Role.java
+index dc845ad..ed6ad2b 100644
+--- a/model/src/main/java/com/gjj/igden/model/Role.java
++++ b/model/src/main/java/com/gjj/igden/model/Role.java
+@@ -2,6 +2,8 @@ package com.gjj.igden.model;
+ 
+ import org.springframework.security.core.GrantedAuthority;
+ 
++import com.gjj.igden.utils.EntityId;
++
+ import javax.persistence.Entity;
+ import javax.persistence.Id;
+ import javax.persistence.Table;
+@@ -10,19 +12,30 @@ import javax.persistence.Transient;
+ 
+ @Entity
+ @Table(name = "app_role")
+-public class Role implements GrantedAuthority {
+-
+-    private String code;
++public class Role implements GrantedAuthority, EntityId {
+ 
++    private Long id;
+     private String name;
++    
++    public Role(Long id) {
++		super();
++		this.id = id;
++	}
+ 
+-    @Id
+-    public String getCode() {
+-        return code;
+-    }
++	public Role(Long id, String name) {
++		super();
++		this.id = id;
++		this.name = name;
++	}
+ 
+-    public void setCode(String code) {
+-        this.code = code;
++	public Role() {
++		super();
++		// TODO Auto-generated constructor stub
++	}
++
++	@Id
++    public Long getId() {
++        return id;
+     }
+ 
+     @Override
+@@ -39,5 +52,14 @@ public class Role implements GrantedAuthority {
+         this.name = name;
+     }
+ 
++	@Override
++	public void setId(Long id) {
++		this.id = id;
++	}
++
++	@Override
++	public String toString() {
++		return "Role [id=" + id + ", name=" + name + "]";
++	}
+ 
+ }
+diff --git a/model/src/main/java/com/gjj/igden/model/WatchListDesc.java b/model/src/main/java/com/gjj/igden/model/WatchListDesc.java
+index 40d92e6..c1b6245 100644
+--- a/model/src/main/java/com/gjj/igden/model/WatchListDesc.java
++++ b/model/src/main/java/com/gjj/igden/model/WatchListDesc.java
+@@ -18,6 +18,7 @@ import javax.persistence.GenerationType;
+ import javax.persistence.Id;
+ import javax.persistence.JoinColumn;
+ import javax.persistence.ManyToOne;
++import javax.persistence.OneToMany;
+ import javax.persistence.Table;
+ import javax.persistence.Transient;
+ 
+@@ -47,7 +48,9 @@ public class WatchListDesc implements IWatchListDesc, Serializable, EntityId {
+ 	
+ 	@Transient
+ 	private  List<String> stockSymbolsList; // wl_tickers (insta) -- delete
+-	@Transient
++	
++	@OneToMany(cascade=CascadeType.ALL, mappedBy="watchListDesc")
++	@Column(name="wl_operational_parameters")
+ 	private  List<OperationParameters> operationParameterses = LazyList.lazyList(new ArrayList<>(),
+ 			FactoryUtils.instantiateFactory(OperationParameters.class));
+ 	
+diff --git a/service/src/main/java/com/gjj/igden/service/accountService/AccountService.java b/service/src/main/java/com/gjj/igden/service/accountService/AccountService.java
+index 4fad8c1..78ab941 100644
+--- a/service/src/main/java/com/gjj/igden/service/accountService/AccountService.java
++++ b/service/src/main/java/com/gjj/igden/service/accountService/AccountService.java
+@@ -73,8 +73,13 @@ public class AccountService {
+   public boolean delete(Long id) throws DAOException {
+ 	  System.out.println("AccountService.delete()");
+ 		Account account = getAccount(id);
+-		accountDaoImpl.delete(account);
+-		return true;
++		account.removeAllRole();
++		account.removeAllDescriptions();
++		if(updateAccount(account)){
++			accountDaoImpl.delete(account);	
++			return true;
++		}
++		return false;
+   }
+ 
+   public boolean setImage(long accId, InputStream is) {
+diff --git a/webapp/pom.xml b/webapp/pom.xml
+index 435f76e..a1d93f7 100644
+--- a/webapp/pom.xml
++++ b/webapp/pom.xml
+@@ -42,5 +42,10 @@
+             <artifactId>service</artifactId>
+             <version>0.0.1-SNAPSHOT</version>
+         </dependency>
++        <dependency>
++            <groupId>javax.servlet</groupId>
++            <artifactId>jstl</artifactId>
++            <version>1.2</version>
++        </dependency>
+     </dependencies>
+ </project>
+\ No newline at end of file
+diff --git a/webapp/src/main/webapp/WEB-INF/add-account.jsp b/webapp/src/main/webapp/WEB-INF/add-account.jsp
+index 1908991..7a38ecb 100644
+--- a/webapp/src/main/webapp/WEB-INF/add-account.jsp
++++ b/webapp/src/main/webapp/WEB-INF/add-account.jsp
+@@ -1,3 +1,4 @@
++<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
+ <!DOCTYPE html>
+ <html>
+ 
+@@ -73,94 +74,34 @@
+                             </div>
+                         </div>
+                         <div class="form-group">
++                        	<label class="col-sm-4 control-label" for="roles">Roles</label>
+                             <div class="col-sm-5 col-sm-offset-4">
+-                                <div class="checkbox">
+-                                    <label>
+-                                        <input type="checkbox" id="agree" checked="checked" name="agree" value="agree"/>Please agree to our policy
+-                                    </label>
++                                <div class="col-sm-5">
++                                    <select id="role" name="role" path="role" >
++									    <c:forEach var="role" items="${accountRoles}">
++									        <option value="${role.id}" >${role}</option>
++									    </c:forEach>
++									</select>
+                                 </div>
+                             </div>
+                         </div>
+                         <div class="form-group">
+-                            <div class="col-sm-9 col-sm-offset-4">
+-                                <button type="submit" class="btn btn-primary" name="signup"
+-                                        value="Sign up">Sign up
+-                                </button>
+-                            </div>
+-                        </div>
+-                    </form>
+-                </div>
+-            </div>
+-            <!-- <div class="panel panel-default">
+-                <div class="panel-heading">
+-                    <h3 class="panel-title">Using feedback icons</h3>
+-                </div>
+-                <div class="panel-body">
+-                    <form id="signupForm1" method="post" class="form-horizontal" action="">
+-                        <div class="form-group">
+-                            <label class="col-sm-4 control-label" for="firstname1">First
+-                                name</label>
+-                            <div class="col-sm-5">
+-                                <input type="text" class="form-control" id="firstname1"
+-                                       name="firstname1" placeholder="First name"/>
+-                            </div>
+-                        </div>
+-                        <div class="form-group">
+-                            <label class="col-sm-4 control-label" for="lastname1">Last name</label>
+-                            <div class="col-sm-5">
+-                                <input type="text" class="form-control" id="lastname1"
+-                                       name="lastname1" placeholder="Last name"/>
+-                            </div>
+-                        </div>
+-                        <div class="form-group">
+-                            <label class="col-sm-4 control-label" for="username1">Username</label>
+-                            <div class="col-sm-5">
+-                                <input type="text" class="form-control" id="username1"
+-                                       name="username1" placeholder="Username"/>
+-                            </div>
+-                        </div>
+-                        <div class="form-group">
+-                            <label class="col-sm-4 control-label" for="email1">Email</label>
+-                            <div class="col-sm-5">
+-                                <input type="text" class="form-control" id="email1" name="email1"
+-                                       placeholder="Email"/>
+-                            </div>
+-                        </div>
+-                        <div class="form-group">
+-                            <label class="col-sm-4 control-label" for="password1">Password</label>
+-                            <div class="col-sm-5">
+-                                <input type="password" class="form-control" id="password1"
+-                                       name="password1" placeholder="Password"/>
+-                            </div>
+-                        </div>
+-                        <div class="form-group">
+-                            <label class="col-sm-4 control-label" for="confirm_password1">Confirm
+-                                password</label>
+-                            <div class="col-sm-5">
+-                                <input type="password" class="form-control" id="confirm_password1"
+-                                       name="confirm_password1" placeholder="Confirm password"/>
+-                            </div>
+-                        </div>
+-                        <div class="form-group">
+                             <div class="col-sm-5 col-sm-offset-4">
+                                 <div class="checkbox">
+                                     <label>
+-                                        <input type="checkbox" id="agree1" name="agree1"
+-                                               value="agree"/>Please agree to our policy
++                                        <input type="checkbox" id="agree" checked="checked" name="agree" value="agree"/>Please agree to our policy
+                                     </label>
+                                 </div>
+                             </div>
+                         </div>
+                         <div class="form-group">
+                             <div class="col-sm-9 col-sm-offset-4">
+-                                <button type="submit" class="btn btn-primary" name="signup1"
+-                                        value="Sign up">Sign up
+-                                </button>
++                                <button type="submit" class="btn btn-primary" name="signup" value="Sign up">Sign up</button>
+                             </div>
+                         </div>
+                     </form>
+                 </div>
+-            </div> -->
++            </div>
+         </div>
+     </div>
+ </div>
+diff --git a/webapp/src/main/webapp/WEB-INF/lazyRowLoad.jsp b/webapp/src/main/webapp/WEB-INF/lazyRowLoad.jsp
+index 31a3eb4..09a5efb 100644
+--- a/webapp/src/main/webapp/WEB-INF/lazyRowLoad.jsp
++++ b/webapp/src/main/webapp/WEB-INF/lazyRowLoad.jsp
+@@ -20,48 +20,52 @@
+       </h3>
+     </div>
+     <div class="panel-body">
+-      <form modelAttribute="theWatchListDesc" action="lazyRowAdd.web" class="form-horizontal" method="post"
+-                 id="lazyList">
+-		<input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
+-        <input type="text" name="acc_id" value="${theWatchListDesc.account.getId()}"/>
++      <form action="lazyRowAdd.web" class="form-horizontal" method="post" id="lazyList">
++      	<div class="form-group">
++      		<div class="col-sm-5">
++				<input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
++		        <input type="hidden" name="acc_id" value="${theWatchListDesc.account.getId()}"/>
++		    </div>
++	    </div>
++        
+         <div class="form-group">
+-          <label path="watchListName" class="col-sm-4 control-label" for="watchListName">watchListName</label>
++          <label class="col-sm-4 control-label" for="watchListName">watchListName</label>
+           <div class="col-sm-5">
+-            <input class="form-control" name="watchListName" id="watchListName" value="watchListName"/>
++            <input class="form-control" name="watchListName" id="watchListName" value="watch List Name" />
+           </div>
+         </div>
++        
+         <div class="form-group">
+-          <label path="watchListDetails" class="col-sm-4 control-label" for="watchListDetails">watchListDetails</label>
++          <label class="col-sm-4 control-label" for="watchListDetails">watchListDetails</label>
+           <div class="col-sm-5">
+-            <input class="form-control" name="watchListDetails" id="watchListDetails" value="watchListDetails" />
++            <input class="form-control" name="watchListDetails" id="watchListDetails" value="watch List Details" />
+           </div>
+         </div>
++        
+         <div class="form-group">
+-          <label path="marketDataFrequency" class="col-sm-4 control-label" for="marketDataFrequency">marketDataFrequency</label>
++          <label class="col-sm-4 control-label" for="marketDataFrequency">marketDataFrequency</label>
+           <div class="col-sm-5">
+             <input class="form-control" name="marketDataFrequency" id="marketDataFrequency" value="1" type="number" />
+           </div>
+         </div>
+-
+-        <li>
+-          <input type="button" value="Add Row" onclick="addRow('dataTable')"/>
+-          <input type="button" value="Delete Row" onclick="deleteRow('dataTable')"/>
+-          <div class="col-sm-5">
+-            <table id="dataTable" name="dataTable" width="350px" border="1">
++		<div class="form-group">
++			<div class="col-sm-5" >
++				<input type="button" value="Add Row" onclick="addRow('dataTable')"/>
++	          	<input type="button" value="Delete Row" onclick="deleteRow('dataTable')"/>
++	       	</div>
++		</div>
++          
++          <div class="form-group">
++            <table id="dataTable" border="1">
+               <tr>
+                 <td><input type="checkbox" name="chk"/></td>
+-                <td>
+-                  1
+-                </td>
+-                <td><input name="operationParameterses[0].name" path="name" class="name"/></td>
++                <td>1</td>
++                <td><input name="operationParameterses[0].name" class="name"/></td>
+               </tr>
+             </table>
+           </div>
+-        </li>
+ 
+-        <fieldset>
+-          <button>Save User Details!</button>
+-        </fieldset>
++        <fieldset><button>Save User Details!</button></fieldset>
+       </form>
+     </div>
+   </div>
+diff --git a/webapp/src/main/webapp/WEB-INF/list-accounts.jsp b/webapp/src/main/webapp/WEB-INF/list-accounts.jsp
+index afa40e9..e375086 100644
+--- a/webapp/src/main/webapp/WEB-INF/list-accounts.jsp
++++ b/webapp/src/main/webapp/WEB-INF/list-accounts.jsp
+@@ -82,18 +82,15 @@
+       </tr>
+ 
+     </c:forEach>
++    
++    <tr><td><a type="button" class="btn btn-primary"
++             href="<c:url value="/home"/>">Back To Home</a></td></tr>
+ 
+   </table>
+ 
+ 
+ </div>
+ 
+-
+-<form action="other-jsp/home.jsp">
+-  <input type="submit" value="back home">
+-</form>
+-
+-
+ <script src="webjars/jquery/1.9.1/jquery.min.js"></script>
+ <script src="webjars/bootstrap/3.3.6/js/bootstrap.min.js"></script>
+ <script
+diff --git a/webapp/src/main/webapp/WEB-INF/view-account.jsp b/webapp/src/main/webapp/WEB-INF/view-account.jsp
+index a4717d9..9b7f6de 100644
+--- a/webapp/src/main/webapp/WEB-INF/view-account.jsp
++++ b/webapp/src/main/webapp/WEB-INF/view-account.jsp
+@@ -1,4 +1,4 @@
+-<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
++<%@taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+ <%@ include file="common/header.jspf" %>
+ <%@ include file="common/navigation.jspf" %>
+ 
+@@ -8,44 +8,50 @@
+   <strong>Additional Info</strong>: <c:out value="${account.getAdditionalInfo()}"/><br>
+   <img src="${pageContext.servletContext.contextPath}/getImage?accId=${account.getId()}" height="111px" width="111px"/>
+ 
+-  <form:form modelAttribute="account" action="uploadImage" method="post" enctype="multipart/form-data">
++  <form modelAttribute="account" action="uploadImage" method="post" enctype="multipart/form-data">
+     <input type="file" name="image"/><br/><br/>
+     <input type="submit"/>
+     <input type="hidden" name="id" value=<c:out value="${account.getId()}"/>>
+-  </form:form>
++  </form>
+   <strong>Available data sets</strong>:
+   <h3>Available DataSets for current account </h3>
+   <div>
+-    <a type="button" class="btn btn-success"
+-       href="<c:url value="/add-watchlist?id=${account.getId()}"/>">Add New watchlist</a>
++    <a type="button" class="btn btn-success" href="<c:url value="/add-watchlist?id=${account.getId()}"/>">Add New watchlist</a>
+   </div>
+   <hr size="4" color="gray"/>
+ 
+-  <table width="100%;">
+-	<thead>
++  <table class="table table-striped">
++		<thead>
+     		<tr>
+     			<th>Data Set Name</th>
+     			<th>Data Set Id</th>
+     			<th>Action</th>
+     		</tr>
+     	</thead>
+-    <c:forEach var="theWatch" items="${watchLists}">
+-      <tr>
+-        <td>${theWatch.getWatchListName()}  </td>
+-        <td>${theWatch.getWatchListId()}   </td>
+-
+-        <td><a type="button" class="btn btn-primary"
+-               href="<c:url value="/view-watchlist?id=${theWatch.watchListId}"/>">View</a></td>
+-      </tr>
+-
+-    </c:forEach>
++    	<tbody>
++    		<tr>
++			    <c:forEach var="theWatch" items="${watchLists}">
++			      <tr>
++			        <td>${theWatch.getWatchListName()}  </td>
++			        <td>${theWatch.getWatchListId()}   </td>
++			
++			        <td><a type="button" class="btn btn-primary"
++			               href="<c:url value="/view-watchlist?watchListId=${theWatch.watchListId}&accountId=${account.getId()}"/>">View</a>
++			            <a type="button" class="btn btn-primary"
++			               href="<c:url value="/delete-watchlist?watchListId=${theWatch.watchListId}&accountId=${account.getId()}"/>">Delete</a>
++			        </td>
++			      </tr>
++			
++			    </c:forEach>
++			 </tr>
++		</tbody>
+ 
+     <!-- todo h make " dataSet name " header of the table "dataset_id" the same or delete it  -->
+   </table>
+   <br>
+-  <form action="Logout" method="post">
++  <!-- <form action="Logout" method="post">
+     <input type="submit" value="Logout">
+-  </form>
++  </form> -->
+ 
+   <form action="search.jsp" method="get">
+     <input type="submit" value="search">
+diff --git a/webapp/src/main/webapp/WEB-INF/view-data.jsp b/webapp/src/main/webapp/WEB-INF/view-data.jsp
+index 3e65670..2b61e30 100644
+--- a/webapp/src/main/webapp/WEB-INF/view-data.jsp
++++ b/webapp/src/main/webapp/WEB-INF/view-data.jsp
+@@ -49,7 +49,7 @@
+ <div id="container" style="width:100%; height: 400px; margin: 0 auto"></div>
+ 
+ <div class="container">
+-  <table class="table table-striped">
++  <table class="table table-striped" style="width: 100%;" border="1" >
+ 
+     <tr>
+       <th>open</th>
+@@ -62,7 +62,7 @@
+     </tr>
+ 
+     <c:forEach var="bar" items="${barData}">
+-      <tr>
++      <tr align="center" >
+         <td> ${bar.getOpen()} </td>
+         <td> ${bar.getHigh()} </td>
+         <td> ${bar.getLow()} </td>
+diff --git a/webapp/src/main/webapp/WEB-INF/view-watchlist.jsp b/webapp/src/main/webapp/WEB-INF/view-watchlist.jsp
+index 94dfb11..2f139d9 100644
+--- a/webapp/src/main/webapp/WEB-INF/view-watchlist.jsp
++++ b/webapp/src/main/webapp/WEB-INF/view-watchlist.jsp
+@@ -8,7 +8,7 @@
+ <%@ include file="common/header.jspf" %>
+ <%@ include file="common/navigation.jspf" %>
+ <div class="container">
+-<table width="100%" >
++<table class="table table-striped" >
+ 	<thead>
+ 		<tr>
+ 			<th>Stock</th>

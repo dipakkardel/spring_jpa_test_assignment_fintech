@@ -16,11 +16,12 @@ public class WatchListDescController {
   
   @Autowired
   private AccountService accountService;
-
+  
   @RequestMapping(value = "/view-watchlist", method = RequestMethod.GET)
-  public String viewAccount(ModelMap model, @RequestParam Long id) {
-    model.addAttribute("stockSymbolsList", service.getStockSymbolsList(id));
-    model.addAttribute("watchListId", id);
+  public String viewWatchList(ModelMap model, @RequestParam Long watchListId) {
+	  System.out.println("WatchListDescController.viewAccount()::: watchListId="+watchListId);
+    model.addAttribute("stockSymbolsList", service.getStockSymbolsList(watchListId));
+    model.addAttribute("watchListId", watchListId);
     return "view-watchlist";
   }
 
@@ -34,12 +35,24 @@ public class WatchListDescController {
   }
 
   @PostMapping(value = "/lazyRowAdd.web")
-  public String lazyRowAdd(@ModelAttribute("theWatchListDesc") WatchListDesc theWatchListDesc,
-                           @ModelAttribute("watchlistName") String watchlistName, @RequestParam("acc_id") Long accId) throws DAOException {
-    System.out.println(accId);
+  public String lazyRowAdd(@ModelAttribute("theWatchListDesc") WatchListDesc theWatchListDesc, 
+		  @RequestParam("acc_id") Long accId) throws DAOException {
+    System.out.println("lazyRowAdd::::::::::::"+theWatchListDesc.getOperationParameterses());
     theWatchListDesc.setAccount(accountService.getAccount(accId));
-    theWatchListDesc.setWatchListName(watchlistName);
     service.create(theWatchListDesc);
     return "redirect:/view-account?id="+accId;
   }
+  
+  @RequestMapping(value = "/delete-watchlist", method = RequestMethod.GET)
+  public String deleteAccount(ModelMap model, @RequestParam("watchListId") Long watchListId, 
+		  @RequestParam("accountId") Long accountId) {
+    try {
+    	System.out.println("accountId:::::::::::::::::::::::::::::::::::"+accountId);
+		service.delete(new WatchListDesc(watchListId));
+	} catch (DAOException e) {
+		e.printStackTrace();
+	}
+    return "redirect:/view-account?id="+accountId;
+  }
+  
 }

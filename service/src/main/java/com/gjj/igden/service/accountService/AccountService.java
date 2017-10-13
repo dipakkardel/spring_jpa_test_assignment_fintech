@@ -73,8 +73,13 @@ public class AccountService {
   public boolean delete(Long id) throws DAOException {
 	  System.out.println("AccountService.delete()");
 		Account account = getAccount(id);
-		accountDaoImpl.delete(account);
-		return true;
+		account.removeAllRole();
+		account.removeAllDescriptions();
+		if(updateAccount(account)){
+			accountDaoImpl.delete(account);	
+			return true;
+		}
+		return false;
   }
 
   public boolean setImage(long accId, InputStream is) {

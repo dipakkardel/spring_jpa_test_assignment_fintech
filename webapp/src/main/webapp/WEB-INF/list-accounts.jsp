@@ -82,17 +82,14 @@
       </tr>
 
     </c:forEach>
+    
+    <tr><td><a type="button" class="btn btn-primary"
+             href="<c:url value="/home"/>">Back To Home</a></td></tr>
 
   </table>
 
 
 </div>
-
-
-<form action="other-jsp/home.jsp">
-  <input type="submit" value="back home">
-</form>
-
 
 <script src="webjars/jquery/1.9.1/jquery.min.js"></script>
 <script src="webjars/bootstrap/3.3.6/js/bootstrap.min.js"></script>

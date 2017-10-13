@@ -20,48 +20,52 @@
       </h3>
     </div>
     <div class="panel-body">
-      <form modelAttribute="theWatchListDesc" action="lazyRowAdd.web" class="form-horizontal" method="post"
-                 id="lazyList">
-		<input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
-        <input type="text" name="acc_id" value="${theWatchListDesc.account.getId()}"/>
+      <form action="lazyRowAdd.web" class="form-horizontal" method="post" id="lazyList">
+      	<div class="form-group">
+      		<div class="col-sm-5">
+				<input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
+		        <input type="hidden" name="acc_id" value="${theWatchListDesc.account.getId()}"/>
+		    </div>
+	    </div>
+        
         <div class="form-group">
-          <label path="watchListName" class="col-sm-4 control-label" for="watchListName">watchListName</label>
+          <label class="col-sm-4 control-label" for="watchListName">watchListName</label>
           <div class="col-sm-5">
-            <input class="form-control" name="watchListName" id="watchListName" value="watchListName"/>
+            <input class="form-control" name="watchListName" id="watchListName" value="watch List Name" />
           </div>
         </div>
+        
         <div class="form-group">
-          <label path="watchListDetails" class="col-sm-4 control-label" for="watchListDetails">watchListDetails</label>
+          <label class="col-sm-4 control-label" for="watchListDetails">watchListDetails</label>
           <div class="col-sm-5">
-            <input class="form-control" name="watchListDetails" id="watchListDetails" value="watchListDetails" />
+            <input class="form-control" name="watchListDetails" id="watchListDetails" value="watch List Details" />
           </div>
         </div>
+        
         <div class="form-group">
-          <label path="marketDataFrequency" class="col-sm-4 control-label" for="marketDataFrequency">marketDataFrequency</label>
+          <label class="col-sm-4 control-label" for="marketDataFrequency">marketDataFrequency</label>
           <div class="col-sm-5">
             <input class="form-control" name="marketDataFrequency" id="marketDataFrequency" value="1" type="number" />
           </div>
         </div>
-
-        <li>
-          <input type="button" value="Add Row" onclick="addRow('dataTable')"/>
-          <input type="button" value="Delete Row" onclick="deleteRow('dataTable')"/>
-          <div class="col-sm-5">
-            <table id="dataTable" name="dataTable" width="350px" border="1">
+		<div class="form-group">
+			<div class="col-sm-5" >
+				<input type="button" value="Add Row" onclick="addRow('dataTable')"/>
+	          	<input type="button" value="Delete Row" onclick="deleteRow('dataTable')"/>
+	       	</div>
+		</div>
+          
+          <div class="form-group">
+            <table id="dataTable" border="1">
               <tr>
                 <td><input type="checkbox" name="chk"/></td>
-                <td>
-                  1
-                </td>
-                <td><input name="operationParameterses[0].name" path="name" class="name"/></td>
+                <td>1</td>
+                <td><input name="operationParameterses[0].name" class="name"/></td>
               </tr>
             </table>
           </div>
-        </li>
 
-        <fieldset>
-          <button>Save User Details!</button>
-        </fieldset>
+        <fieldset><button>Save User Details!</button></fieldset>
       </form>
     </div>
   </div>

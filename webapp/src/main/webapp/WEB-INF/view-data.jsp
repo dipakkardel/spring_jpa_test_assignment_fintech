@@ -49,7 +49,7 @@
 <div id="container" style="width:100%; height: 400px; margin: 0 auto"></div>
 
 <div class="container">
-  <table class="table table-striped">
+  <table class="table table-striped" style="width: 100%;" border="1" >
 
     <tr>
       <th>open</th>
@@ -62,7 +62,7 @@
     </tr>
 
     <c:forEach var="bar" items="${barData}">
-      <tr>
+      <tr align="center" >
         <td> ${bar.getOpen()} </td>
         <td> ${bar.getHigh()} </td>
         <td> ${bar.getLow()} </td>

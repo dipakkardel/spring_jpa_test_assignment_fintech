@@ -1,4 +1,4 @@
-<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ include file="common/header.jspf" %>
 <%@ include file="common/navigation.jspf" %>
 
@@ -8,44 +8,50 @@
   <strong>Additional Info</strong>: <c:out value="${account.getAdditionalInfo()}"/><br>
   <img src="${pageContext.servletContext.contextPath}/getImage?accId=${account.getId()}" height="111px" width="111px"/>
 
-  <form:form modelAttribute="account" action="uploadImage" method="post" enctype="multipart/form-data">
+  <form modelAttribute="account" action="uploadImage" method="post" enctype="multipart/form-data">
     <input type="file" name="image"/><br/><br/>
     <input type="submit"/>
     <input type="hidden" name="id" value=<c:out value="${account.getId()}"/>>
-  </form:form>
+  </form>
   <strong>Available data sets</strong>:
   <h3>Available DataSets for current account </h3>
   <div>
-    <a type="button" class="btn btn-success"
-       href="<c:url value="/add-watchlist?id=${account.getId()}"/>">Add New watchlist</a>
+    <a type="button" class="btn btn-success" href="<c:url value="/add-watchlist?id=${account.getId()}"/>">Add New watchlist</a>
   </div>
   <hr size="4" color="gray"/>
 
-  <table width="100%;">
-	<thead>
+  <table class="table table-striped">
+		<thead>
     		<tr>
     			<th>Data Set Name</th>
     			<th>Data Set Id</th>
     			<th>Action</th>
     		</tr>
     	</thead>
-    <c:forEach var="theWatch" items="${watchLists}">
-      <tr>
-        <td>${theWatch.getWatchListName()}  </td>
-        <td>${theWatch.getWatchListId()}   </td>
-
-        <td><a type="button" class="btn btn-primary"
-               href="<c:url value="/view-watchlist?id=${theWatch.watchListId}"/>">View</a></td>
-      </tr>
-
-    </c:forEach>
+    	<tbody>
+    		<tr>
+			    <c:forEach var="theWatch" items="${watchLists}">
+			      <tr>
+			        <td>${theWatch.getWatchListName()}  </td>
+			        <td>${theWatch.getWatchListId()}   </td>
+			
+			        <td><a type="button" class="btn btn-primary"
+			               href="<c:url value="/view-watchlist?watchListId=${theWatch.watchListId}&accountId=${account.getId()}"/>">View</a>
+			            <a type="button" class="btn btn-primary"
+			               href="<c:url value="/delete-watchlist?watchListId=${theWatch.watchListId}&accountId=${account.getId()}"/>">Delete</a>
+			        </td>
+			      </tr>
+			
+			    </c:forEach>
+			 </tr>
+		</tbody>
 
     <!-- todo h make " dataSet name " header of the table "dataset_id" the same or delete it  -->
   </table>
   <br>
-  <form action="Logout" method="post">
+  <!-- <form action="Logout" method="post">
     <input type="submit" value="Logout">
-  </form>
+  </form> -->
 
   <form action="search.jsp" method="get">
     <input type="submit" value="search">

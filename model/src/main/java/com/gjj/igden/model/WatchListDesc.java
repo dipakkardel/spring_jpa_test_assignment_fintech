@@ -18,6 +18,7 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
@@ -47,7 +48,9 @@ public class WatchListDesc implements IWatchListDesc, Serializable, EntityId {
 	
 	@Transient
 	private  List<String> stockSymbolsList; // wl_tickers (insta) -- delete
-	@Transient
+	
+	@OneToMany(cascade=CascadeType.ALL, mappedBy="watchListDesc")
+	@Column(name="wl_operational_parameters")
 	private  List<OperationParameters> operationParameterses = LazyList.lazyList(new ArrayList<>(),
 			FactoryUtils.instantiateFactory(OperationParameters.class));
 	
